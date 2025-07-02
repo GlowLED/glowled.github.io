@@ -1,0 +1,747 @@
+<!doctype html>
+<html
+  lang="en" 
+  data-theme-mode="auto"
+  >
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  RoPE旋转位置编码学习笔记与代码实现 | GlowLED
+</title>
+<meta
+  name="description"
+  content="一些思考与经验分享。附带手搓的代码~"
+/><script>
+  window.siteConfig = JSON.parse("{\"anchor_icon\":null,\"base\":\"//localhost:1313/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"icon_font\":\"4552607_0khxww3tj3q9\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_0khxww3tj3q9.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="/css/loader.css" />
+<meta property="og:type" content="website" />
+  <meta property="og:title" content="RoPE旋转位置编码学习笔记与代码实现 | GlowLED" />
+  <meta
+    property="og:description"
+    content="一些思考与经验分享。附带手搓的代码~"
+  />
+  <meta property="og:url" content="//localhost:1313/post/post-1/" />
+  <meta
+    property="og:site_name"
+    content=""
+  />
+  <meta
+    property="og:image"
+    content="/"
+  />
+  <meta property="article:author" content="GlowLED" />
+  <meta property="article:published_time" content="2025-07-02T13:22:54&#43;08:00" />
+  <meta property="article:modified_time" content="2025-07-02T13:22:54&#43;08:00" /><meta property="article:tag" content="手搓大模型计划技术" /><meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="/" />
+<link rel="shortcut icon" href="/favicon.ico"><link rel="stylesheet" href="/css/main.css" />
+<link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.22/dist/katex.min.css"
+    integrity="sha384-5TcZemv2l/9On385z///&#43;d7MSYlvIEw9FuZTIdZ14vJLqWphw7e7ZPuOiCHJcFCP" crossorigin="anonymous"onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.0/dist/aos.css"
+    integrity="sha384-4NN3fZ5AokFyHuoihl7A9qWaCt&#43;HsAtOaUsXwJGRb4/SMBtFr2vcNSHR5E8dg0Wk" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">Loading...</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var startLoading = () => {
+      time = Date.now();
+      document.getElementById('loader').classList.remove("loading");
+    }
+    var endLoading = () => {
+      if (!time) {
+        document.body.style.overflow = 'auto';
+        document.getElementById('loader').classList.add("loading");
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          document.body.style.overflow = 'auto';
+          document.getElementById('loader').classList.add("loading");
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    document.getElementById('loader').addEventListener('click', endLoading);
+  </script><div id="copy-tooltip" style="pointer-events: none; opacity: 0; transition: all 0.2s ease; position: fixed;top: 50%;left: 50%;z-index: 999;transform: translate(-50%, -50%);color: white;background: rgba(0, 0, 0, 0.5);padding: 10px 15px;border-radius: 10px;">
+</div>
+<div id="lang-tooltip" style="pointer-events: none; opacity: 0; transition: all 0.2s ease; position: fixed;top: 50%;left: 50%;z-index: 999;transform: translate(-50%, -50%);color: white;background: rgba(0, 0, 0, 0.5);padding: 10px 15px;border-radius: 10px;">
+This article does not have a corresponding language version
+</div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav"><span class="main-nav-link-wrap">
+        <div class='main-nav-icon icon '>&#xe632;</div>
+        <a class="main-nav-link" href="/">Home</a>
+      </span><span class="main-nav-link-wrap">
+        <div class='main-nav-icon icon '>&#xe633;</div>
+        <a class="main-nav-link" href="/archives">Archives</a>
+      </span><span class="main-nav-link-wrap">
+        <div class='main-nav-icon icon '>&#xe628;</div>
+        <a class="main-nav-link" href="/about">About</a>
+      </span><span class="main-nav-link-wrap">
+        <div class='main-nav-icon icon '>&#xe639;</div>
+        <a class="main-nav-link" href="/friend">Friend</a>
+      </span><a id="main-nav-toggle" class="nav-icon"></a>
+  </nav>
+  <nav id="sub-nav"></nav></div>
+<header id="header"><picture></picture><img  fetchpriority="high" src="/images/banner_yanami.jpg" alt="RoPE旋转位置编码学习笔记与代码实现"><div id="header-outer">
+    <div id="header-title"><a href="/" id="logo">
+            <h1 data-aos="slide-up">RoPE旋转位置编码学习笔记与代码实现</h1>
+          </a><h2 id="subtitle-wrap" data-aos="slide-down"></h2></div>
+  </div>
+</header><div id="content"
+          class="sidebar-left"
+            ><aside id="sidebar"><div class="sidebar-wrapper wrap-sticky">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><div class="sidebar-toc">
+  <h3 class="toc-title">Contents</h3>
+  <div class="sidebar-toc-wrapper toc-div-class">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#绝对位置编码的缺陷">绝对位置编码的缺陷</a></li>
+    <li><a href="#rope旋转位置编码">RoPE，旋转位置编码</a></li>
+    <li><a href="#代码实现">代码实现</a></li>
+  </ul>
+</nav>
+  </div>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="/avatar/avatar_yamada.jpg"
+    data-sizes="auto"
+    alt="GlowLED"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">GlowLED</div>
+  <div class="sidebar-description">一个混吃等死的普通人</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>Posts</div><div class="sidebar-state-number">3</div>
+  </div>
+  <div class="sidebar-state-category">
+    <div>Categories</div>
+    <div class="sidebar-state-number">
+      2
+    </div>
+  </div>
+  <div class="sidebar-state-tag">
+    <div>Tags</div>
+    <div class="sidebar-state-number">4</div>
+  </div>
+</div>
+<div class="sidebar-social"></div>
+<div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/"
+        aria-label="Home"
+      ></a>
+      <div class='sidebar-menu-icon icon '>&#xe632;</div>
+      <div class="sidebar-menu-link">Home</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/archives"
+        aria-label="Archives"
+      ></a>
+      <div class='sidebar-menu-icon icon '>&#xe633;</div>
+      <div class="sidebar-menu-link">Archives</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/about"
+        aria-label="About"
+      ></a>
+      <div class='sidebar-menu-icon icon '>&#xe628;</div>
+      <div class="sidebar-menu-link">About</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/friend"
+        aria-label="Friend"
+      ></a>
+      <div class='sidebar-menu-icon icon '>&#xe639;</div>
+      <div class="sidebar-menu-link">Friend</div>
+    </div></div>
+</div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div>
+
+  <div class="sidebar-widget"></div></aside>
+<section id="main"><article
+  class="h-entry article"
+  itemprop="blogPost"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link"
+    data-aos="zoom-in"
+  >
+    <time datetime="2025-07-02 13:22:54 &#43;0800 CST" itemprop="datePublished"
+      >2025-07-02</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2025-07-02</time
+    >
+  </span>
+</div>
+<div class="article-category"><a
+      class="article-category-link"
+      href="/categories/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0"
+      data-aos="zoom-in"
+      >深度学习</a
+    ></div>
+</div>
+    <div class="hr-line"></div><div class="e-content article-entry" itemprop="articleBody"><blockquote>
+<p>最近想写点torch，就打算手搓个llm预训练，于是就去拿llama3开刀。尝试去实现久闻大名的RoPE（旋转位置编码）的时候，搜到了这篇文章，然后就直接开看。奈何本人数学水平实在太差，横竖看不进去，总是不太能理解。于是就干脆对着公式写代码，经过一段痛苦的时间后，勉强挤出几十行代码，才算是对RoPE有了一些不严谨的理解。</p></blockquote>
+<p><strong>最近心血来潮整的手搓llm结构与训练过程：</strong><a href="http://github.com/GlowLED/SimpleLLM">SimpleLLM</a> (应该会摆掉，应该&hellip;)</p>
+<h2 id="绝对位置编码的缺陷">
+<a class="header-anchor" href="#%e7%bb%9d%e5%af%b9%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81%e7%9a%84%e7%bc%ba%e9%99%b7"></a>
+绝对位置编码的缺陷
+</h2><p>绝对位置编码是这么做的：
+</p>
+$$
+x'_m = f(x_m,m)
+$$<p>
+是第m个位置的token进行词嵌入后得到的向量， 则是我们想要得到的，附加了位置信息的第m个位置的token对应的初始语义向量。原论文的绝对位置编码通过直接更改输入到模型内部的词嵌入向量的值，来实现附加位置信息。</p>
+<p>这种方法非常符合直觉，在输入进模型之前进行某种意义上的“标号”，来附加位置信息。只要每个位置附加的信息都是独一无二的，那么它就可以作为这个位置的唯一标识。散落无章的一堆纸，只要有了页码，就可以排成一本书。</p>
+<p>但是这个方法也有问题。至于是什么问题呢？本人对此有一些不成熟的思考：</p>
+<p>我们先从llama3的训练中的一个细节出发：Attention is All You Need这篇论文中模型的训练，与BERT的训练，从它们的数据集中拿出某一个sample，那大概率是填不满上下文长度的，于是需要对上下文进行padding来达成固定长度。假设上下文长度为16K，甲sample的序列长度为1K，乙sample的序列长度为8K，两者都填充到了16K，开销上来看是差不多的，因为数据的规模一样大，都是一样计算（猜测可能内部有一些优化，但是不会差太多），但是从直觉上来说，应该是乙sample包含的有效信息更多，更加利于模型优化。</p>
+<p>于是，很自然的，当模型上下文长度比较大，没多少sample能填满时，一个输入的序列应该由多个sample拼接而成，凑成一个比较接近上下文长度的序列，充分利用算力。当然了，为了防止某一个sample中的token进行注意力计算时，去查询了其它sample的token，mask也要进行一些改造。不过本篇文章的重点不是这个。</p>
+<p>在这种情况下，我们其实希望位置编码的信息要有某种“等价性”：无论其中一个sample在哪个位置，位置编码信息应该不影响位置的表达。一个sample在拼接过程中被排在第一个，中间的位置，还是最后的位置，位置编码信息都应该具有某种共通的性质，因为这句话无论排在哪都是同一句话，位置编码出的向量都应该包含相同的信息。</p>
+<p>这种特征的“空间平移不变性”，让人联想到CNN对于特征位置的不敏感。原因是CNN天生擅长捕捉像素<strong>相对位置的信息</strong>，毕竟本身结构的设计就是为了考虑<strong>相对位置</strong>。</p>
+<p>所以要实现这种对于空间的绝对位置不敏感，无论在序列中的哪个位置都能表达相同的模式的编码方式，考虑<strong>相对位置信息</strong>很重要。</p>
+<p>这么来看，原来的绝对位置编码的方式其实就有点不太合适了。为什么呢？我们观察一下原来绝对位置编码使用的Sinusoidal 函数：
+</p>
+$$
+p_{i,2t}=\sin(k/10000^{2t/d}) \\
+p_{i,2t+1}=\cos(k/10000^{2t/d})
+$$<p>
+<img src="https://pic2.zhimg.com/v2-23b21d0c383621cdcd19f2d007a61cb7_1440w.jpg" alt="网上随便找的图"></p>
+<p>可以看到，Sinusoidal 函数基本不强调“相对位置信息”，不同的位置，甚至连变化的feature都不是同一个，例如，在position大约为0-5时，相邻位置编码信息在大于40的feature上几乎无变化。而当position增大后，feature较大的位置也发生了变化。位置之间的差距甚至都不是同一个feature，<strong>都不是一个方面的比较</strong>。</p>
+<p>绝对位置编码错开了不同位置间差距的feature的位置，虽然充分利用了语义向量中的每个feature，但是也基本毁灭了相对位置信息的一致性。这使得同一个sample被拼接到开头，中间与结尾的位置信息都不太一样，模型需要花费额外的参数来去学习这种没有规律的不同。仿佛就是同样一句话只是因为开头被放在了不同位置，token之间的位置关系就变了。</p>
+<p>现在我们放远视角，我们不仅关心llama3训练这种一输入多样本的情况。考虑大多数文章。同样一句话在文章的开头与结尾虽然有不同的绝对位置信息，但也应该具有相同的相对位置信息，而不是相对位置信息有很大差别。</p>
+<p>为了解决这个问题，我们人为地设计一种可以在绝对位置信息的基础上表达相对位置信息的规律，这样模型能很容易地学习到这个规律。这就有了RoPE。而RoPE选择的规律是<strong>角度</strong>。</p>
+<h2 id="rope旋转位置编码">
+<a class="header-anchor" href="#rope%e6%97%8b%e8%bd%ac%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81"></a>
+RoPE，旋转位置编码
+</h2><p>与绝对位置编码不同，RoPE是在q，k，v生成之后，对q与k做手脚，来附加位置信息。附加完后，q，k再正常计算attn score，然后对v进行加权和（attention的正常流程）。</p>
+<p>本人数学水平堪忧，中间过程怕讲错，所以这里直接看结果的几个式子：
+</p>
+$$
+f_{q, k}(x_m, m) = R^{d}_{\Theta, m}W_{q,k}x_m
+$$<p>
+上面这个式子就是我们想要的这样一个编码函数的表达式：它接受输入 (第m个token进行词嵌入后得到的向量)，以及位置m，输出编码后的向量 .这就是我们的目标，很简单纯粹。</p>
+<p>右侧该函数的形式是 与两个矩阵相乘（分别是$W_{q,k}$与$R^d_{\Theta,m}$，这里W下标既有q又有k的意思其实是，当想编码的是q时，使用Wq，当想编码的是k时，使用Wk.</p>
+<p>所以编码函数也能这么写：
+</p>
+$$
+f_q(q_m,m)=R^d_{\Theta,m}q_m\\ 
+f_k(k_m,m)=R^d_{\Theta,m}k_m
+$$<p>
+其实就是把q与k分别乘以同一个编码矩阵 .</p>
+<p>然后我们来看看这个编码矩阵：
+</p>
+$$
+R^d_{\Theta,m} =
+\begin{pmatrix}
+\cos m\theta_0 & -\sin m\theta_0 & 0 & 0 & \cdots & 0 & 0
+\\
+\sin m\theta_0 & \cos m\theta_0 & 0 & 0 & \cdots & 0 & 0 
+\\
+0 & 0 & \cos m\theta_1 & -\sin m\theta_1 & \cdots & 0 & 0 
+\\
+0 & 0 & \sin m\theta_1 & \cos m\theta_1  & \cdots & 0 & 0
+\\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots 
+\\
+0 & 0 & 0 & 0 & ... & \cos m\theta_{d/2-1} & -\sin m\theta_{d/2-1}
+\\
+0 & 0 & 0 & 0 & ... & \sin m\theta_{d/2-1} & \cos m\theta_{d/2-1}
+\end{pmatrix}
+$$<p>
+看着有点复杂，但是我们先拿出来第一部分：
+</p>
+$$
+r^d_{\theta_0,m}=  
+\begin{pmatrix} 
+\cos m\theta_0 & -\sin m\theta_0 \\ 
+\sin m\theta_0 & \cos m\theta_0 
+\end{pmatrix}
+$$<p>
+按照矩阵乘法的规则，它会作用这样一个向量（其它位置都是0，相当于不作用，不考虑）:
+</p>
+$$
+x_{m,part_0}=
+\begin{pmatrix}
+x_0\\
+x_1
+\end{pmatrix}
+$$<p>
+观察这个第一部分的编码矩阵 ,不难发现这其实是个<strong>旋转矩阵</strong>（以前学的图形学勉勉强强用上了点皮毛hhh），它右乘 的效果，就是将这个向量<strong>逆时针旋转</strong>$m\theta_0$.</p>
+<p>那么扩展到整个编码矩阵 ，这个大矩阵的效果就是：将 （ 同理，这里就全部写q了）向量中的元素，按照$q_0$,$q_1$;$q_2$,$q_3$;&hellip;这样两两分组，每组元素组成的二维向量在平面上分别旋转$m\theta_0$;$m\theta_1$;&hellip;得到编码后的向量 .</p>
+<p>你可能会说：哎呀哎呀，这转来转去的那么麻烦有啥用吗？说相对信息很重要，这也没看出来哪里有相对信息呀！</p>
+<p>但是我们先来看这么一点：与绝对位置编码feature的变化没啥规律不同，RoPE中同一组的feature都是在同一个平面上进行旋转变换，不同的位置，无论你是m还是n，不过是差了整数倍 的旋转角度。</p>
+<p>而第m个token与第n个token之间的位置差距，不过就是差了旋转（m-n）个 的差距。并且相同组的feature， 与旋转的平面都是相同的。这就将位置信息中的相对位置信息，编码进了”多少个 的旋转角度差距“。这在数字上看似乎是不太明显的规律。但是对于模型来说，通过训练，它可以较为容易地学习到这个规律。</p>
+<h2 id="代码实现">
+<a class="header-anchor" href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0"></a>
+代码实现
+</h2><p>首先，编码矩阵 比较大，又很稀疏，同时也很有规律，所以可以尝试进行一些化简：
+</p>
+$$
+R^d_{\Theta,m}x_m= \begin{pmatrix} 
+x_0\\ 
+x_1\\ 
+x_2\\ 
+x_3\\ 
+\vdots\\ 
+x_{d-2}\\ 
+x_{d-1} 
+\end{pmatrix} 
+\odot 
+\begin{pmatrix} 
+\cos m\theta_0\\ 
+\cos m\theta_0\\ 
+\cos m\theta_1\\ 
+\cos m\theta_1\\ 
+\vdots\\ 
+\cos m\theta_{d/2-1}\\ 
+\cos m\theta_{d/2-1} 
+\end{pmatrix} 
++ 
+\begin{pmatrix} 
+-x_1\\ 
+x_0\\ 
+-x_3\\ 
+x_2\\ 
+\vdots\\ 
+-x_{d-1}\\ 
+x_{d-2} 
+\end{pmatrix} 
+\odot 
+\begin{pmatrix} 
+\sin m\theta_0\\ 
+\sin m\theta_0\\ 
+\sin m\theta_1\\ 
+\sin m\theta_1\\ 
+\vdots\\ 
+\sin m\theta_{d/2-1}\\ 
+\sin m\theta_{d/2-1} 
+\end{pmatrix}
+$$<p>
+<em>$\odot$（Hadamard product，哈达玛积）就是对应元素相乘，在torch中就是普通的*符号。</em></p>
+<p>llama3中的实现就是这种方法，不过我的代码是这么实现的：
+</p>
+$$
+R^d_{\Theta,m}x_m= 
+\begin{pmatrix} 
+x_0\\ 
+x_1\\ 
+x_2\\ 
+\vdots\\ 
+x_{d/2-1}\\ 
+x_{d/2}\\ 
+x_{d/2+1}\\ 
+x_{d/2+2}\\ 
+\vdots\\ 
+x_{d-1} 
+\end{pmatrix} 
+\odot 
+\begin{pmatrix} 
+\cos m\theta_0\\ 
+\cos m\theta_1\\ 
+\cos m\theta_2\\ 
+\vdots\\ 
+\cos m\theta_{d/2-1}\\ 
+\cos m\theta_0\\ 
+\cos m\theta_1\\ 
+\cos m\theta_2\\ 
+\vdots \\ 
+\cos m\theta_{d/2-1} 
+\end{pmatrix} 
++ 
+\begin{pmatrix} 
+-x_{d/2}\\ 
+-x_{d/2+1}\\ 
+-x_{d/2+2}\\ 
+\vdots\\ 
+-x_{d-1}\\ 
+x_0\\ 
+x_1\\ 
+x_2\\ 
+\vdots\\ 
+x_{d/2-1} 
+\end{pmatrix} 
+\odot 
+\begin{pmatrix} 
+\sin m\theta_0\\ 
+\sin m\theta_1\\ 
+\sin m\theta_2\\ 
+\vdots\\ 
+\sin m\theta_{d/2-1}\\ 
+\sin m\theta_0\\ 
+\sin m\theta_1\\ 
+\sin m\theta_2\\ 
+\vdots \\ 
+\sin m\theta_{d/2-1} 
+\end{pmatrix}
+$$<p>
+这里不是相邻元素分组，而是上半段元素与下半段元素分组。例如： 与 ， 与 , 与 .之所以可以这么做，是因为在进行分组之前，features之间并没有什么顺序，任意分组都不会有什么影响。这样上半段与下半段分别分组的方法，也是ChatGLM使用的方法。</p>
+<p>代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python3" data-lang="python3"><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> torch <span style="color:#f92672">import</span> nn
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RoPE</span>(nn<span style="color:#f92672">.</span>Module):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self, d: int, max_n: int, base: float<span style="color:#f92672">=</span><span style="color:#ae81ff">10000.0</span>) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span><span style="color:#a6e22e">__init__</span>()
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>d <span style="color:#f92672">=</span> d
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>max_n <span style="color:#f92672">=</span> max_n
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>base <span style="color:#f92672">=</span> base
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 先生成从\theta_0到\theta_{d/2-1}的全部\theta</span>
+</span></span><span style="display:flex;"><span>        thetas <span style="color:#f92672">=</span> (base <span style="color:#f92672">**</span> (<span style="color:#f92672">-</span>torch<span style="color:#f92672">.</span>arange(<span style="color:#ae81ff">0</span>, d, <span style="color:#ae81ff">2</span>)<span style="color:#f92672">.</span>float() <span style="color:#f92672">/</span> d))<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">0</span>)  <span style="color:#75715e"># [1, d/2]</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 拼接一下，形成从0到d/2-1，再从0到d/2-1的序列</span>
+</span></span><span style="display:flex;"><span>        thetas <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>cat([thetas, thetas], dim<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)  <span style="color:#75715e"># [1, d]</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 生成m\theta,这里利用了broadcast机制</span>
+</span></span><span style="display:flex;"><span>        idx <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>arange(<span style="color:#ae81ff">1</span>, max_n<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)<span style="color:#f92672">.</span>float()<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">1</span>)  <span style="color:#75715e"># [max_n, 1]</span>
+</span></span><span style="display:flex;"><span>        thetas <span style="color:#f92672">=</span> thetas <span style="color:#f92672">*</span> idx  <span style="color:#75715e"># [max_n, d]</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 计算一下sin与cos值</span>
+</span></span><span style="display:flex;"><span>        cos_cached <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>cos(thetas)  <span style="color:#75715e"># [max_n, d]</span>
+</span></span><span style="display:flex;"><span>        sin_cached <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>sin(thetas)  <span style="color:#75715e"># [max_n, d]</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 注册一下变量</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>register_buffer(<span style="color:#e6db74">&#39;cos_cached&#39;</span>, cos_cached)  <span style="color:#75715e"># [max_n, d]</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>register_buffer(<span style="color:#e6db74">&#39;sin_cached&#39;</span>, sin_cached)  <span style="color:#75715e"># [msx_n, d]</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 类型注释，可无</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>cos_cached: torch<span style="color:#f92672">.</span>Tensor
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>sin_cached: torch<span style="color:#f92672">.</span>Tensor
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">forward</span>(self, x: torch<span style="color:#f92672">.</span>Tensor) <span style="color:#f92672">-&gt;</span> torch<span style="color:#f92672">.</span>Tensor:
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Args:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            x: [batch_size, seq_len, d]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Returns:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            o: [batch_size, seq_len, d]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>       
+</span></span><span style="display:flex;"><span>        _, n, d <span style="color:#f92672">=</span> x<span style="color:#f92672">.</span>size()
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 切片切出来需要的长度</span>
+</span></span><span style="display:flex;"><span>        cos <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>cos_cached[:n, :]<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">0</span>)  <span style="color:#75715e"># [1, n, d]</span>
+</span></span><span style="display:flex;"><span>        sin <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>sin_cached[:n, :]<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">0</span>)  <span style="color:#75715e"># [1, n, d]</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 分别计算第一项和第二项，注意这里第二项进行了切片与拼接</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 同时这里也利用了broadcast机制</span>
+</span></span><span style="display:flex;"><span>        x_cos <span style="color:#f92672">=</span> x <span style="color:#f92672">*</span> cos
+</span></span><span style="display:flex;"><span>        x_sin <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>cat([<span style="color:#f92672">-</span>x[:, :, d<span style="color:#f92672">//</span><span style="color:#ae81ff">2</span>:], x[:, :, :d<span style="color:#f92672">//</span><span style="color:#ae81ff">2</span>]], dim<span style="color:#f92672">=-</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> sin
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        o <span style="color:#f92672">=</span> x_cos <span style="color:#f92672">+</span> x_sin  <span style="color:#75715e"># [batch_size, seq_len, d]</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> o
+</span></span></code></pre></div><p>虽然看了不少资料，但是本人习惯比较差，难以考据都看了哪些资料，无法列举。</p>
+<p>本篇文章中的想法与代码基本都是自己一个人弄的。本人见识浅薄，如果有问题或者是不同的意见，欢迎探讨。</p>
+</div>
+    <footer class="article-footer"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/tags/%e6%89%8b%e6%90%93%e5%a4%a7%e6%a8%a1%e5%9e%8b%e8%ae%a1%e5%88%92"
+        rel="tag"
+        >手搓大模型计划</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/tags/%e6%8a%80%e6%9c%af"
+        rel="tag"
+        >技术</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap article-nav-link-left"><img
+              data-src="https://t.alcy.cc/fj"
+              data-sizes="auto"
+              alt="Test"
+              class="lazyload"
+            /><a href="//localhost:1313/post/test/"></a>
+        <div class="article-nav-caption">Newer</div>
+        <h3 class="article-nav-title">Test</h3>
+      </div></nav></article></section>
+        </div><footer id="footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2025<span class="footer-info-sep rotate"></span>
+      GlowLED
+    </div><div>
+        Powered by&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          >Hugo</a
+        >&nbsp; Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;827</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;00:06</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >Number of visits&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >Number of visitors&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><div class="sidebar-toc">
+  <h3 class="toc-title">Contents</h3>
+  <div class="sidebar-toc-wrapper toc-div-class">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#绝对位置编码的缺陷">绝对位置编码的缺陷</a></li>
+    <li><a href="#rope旋转位置编码">RoPE，旋转位置编码</a></li>
+    <li><a href="#代码实现">代码实现</a></li>
+  </ul>
+</nav>
+  </div>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="/avatar/avatar_yamada.jpg"
+    data-sizes="auto"
+    alt="GlowLED"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">GlowLED</div>
+  <div class="sidebar-description">一个混吃等死的普通人</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>Posts</div><div class="sidebar-state-number">3</div>
+  </div>
+  <div class="sidebar-state-category">
+    <div>Categories</div>
+    <div class="sidebar-state-number">
+      2
+    </div>
+  </div>
+  <div class="sidebar-state-tag">
+    <div>Tags</div>
+    <div class="sidebar-state-number">4</div>
+  </div>
+</div>
+<div class="sidebar-social"></div>
+<div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/"
+        aria-label="Home"
+      ></a>
+      <div class='sidebar-menu-icon icon '>&#xe632;</div>
+      <div class="sidebar-menu-link">Home</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/archives"
+        aria-label="Archives"
+      ></a>
+      <div class='sidebar-menu-icon icon '>&#xe633;</div>
+      <div class="sidebar-menu-link">Archives</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/about"
+        aria-label="About"
+      ></a>
+      <div class='sidebar-menu-icon icon '>&#xe628;</div>
+      <div class="sidebar-menu-link">About</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/friend"
+        aria-label="Friend"
+      ></a>
+      <div class='sidebar-menu-icon icon '>&#xe639;</div>
+      <div class="sidebar-menu-link">Friend</div>
+    </div></div>
+</div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="/js/main.js" ></script><script src="/js/aos.js" ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="/js/pjax_main.js" data-pjax></script>
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "GlowLED",
+          title: "RoPE旋转位置编码学习笔记与代码实现",
+          url: "\/\/localhost:1313\/post\/post-1\/",
+          description: "一些思考与经验分享。附带手搓的代码~",
+          cover: "\/\/localhost:1313\/images\/banner_yanami.jpg",
+        };
+      </script><script src="/js/insert_highlight.js" data-pjax></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const pswp = () => {
+          if (_$$('.article-entry a.article-gallery-item').length > 0) {
+            new PhotoSwipeLightbox({
+              gallery: '.article-entry',
+              children: 'a.article-gallery-item',pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+          if(_$$('.article-gallery a.article-gallery-item').length > 0) {
+            new PhotoSwipeLightbox({
+              gallery: '.article-gallery',
+              children: 'a.article-gallery-item',pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+          window.lightboxStatus = 'done';
+          window.removeEventListener('lightbox:ready', pswp);
+        }
+        if(window.lightboxStatus === 'ready') {
+          pswp()
+        } else {
+          window.addEventListener('lightbox:ready', pswp);
+        }
+      </script><script
+    src="https://npm.webcache.cn/katex@0.16.22/dist/katex.min.js"
+    data-pjaxintegrity="sha384-cMkvdD8LoxVzGF/RPUKAcvmm49FQ0oxwDF3BGKtDXcEc&#43;T1b2N&#43;teh/OJfpU0jr6" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.22/dist/contrib/auto-render.min.js"
+    data-pjaxintegrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    asyncintegrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script></body>
+</html>

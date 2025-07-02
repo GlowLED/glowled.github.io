@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>大模型 on </title>
+    <link>//localhost:1313/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/</link>
+    <description>Recent content from </description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    
+    <managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor>
+    <webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster>
+    
+    <copyright>All articles on this blog are licensed under the BY-NC-SA license agreement unless otherwise stated. Please indicate the source when reprinting!</copyright>
+    
+    <lastBuildDate>Wed, 02 Jul 2025 12:35:37 +0800</lastBuildDate>
+    
+    
+    <atom:link href="//localhost:1313/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>RoPE旋转位置编码学习笔记与代码实现</title>
+      <link>//localhost:1313/post/new/</link>
+      <pubDate>Wed, 02 Jul 2025 12:35:37 &#43;0800</pubDate>
+      <author>zpeiyu11@gamil.com (GlowLED)</author>
+      <guid>//localhost:1313/post/new/</guid>
+      <description>
+        <![CDATA[<h1>RoPE旋转位置编码学习笔记与代码实现</h1><p>Author: GlowLED(zpeiyu11@gamil.com)</p>
+        
+          <p><strong>最近心血来潮整的手搓llm结构与训练过程：</strong><a href="https://link.zhihu.com/?target=https%3A//github.com/GlowLED/SimpleLLM">SimpleLLM</a> (应该会摆掉，应该&hellip;)</p>
+<h2 id="绝对位置编码的缺陷">
+<a class="header-anchor" href="#%e7%bb%9d%e5%af%b9%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81%e7%9a%84%e7%bc%ba%e9%99%b7"></a>
+绝对位置编码的缺陷
+</h2><p>绝对位置编码是这么做的：
+$$
+x&rsquo;_m = f(x_m,m)
+$$
+是第m个位置的token进行词嵌入后得到的向量， 则是我们想要得到的，附加了位置信息的第m个位置的token对应的初始语义向量。原论文的绝对位置编码通过直接更改输入到模型内部的词嵌入向量的值，来实现附加位置信息。</p>
+<p>这种方法非常符合直觉，在输入进模型之前进行某种意义上的“标号”，来附加位置信息。只要每个位置附加的信息都是独一无二的，那么它就可以作为这个位置的唯一标识。散落无章的一堆纸，只要有了页码，就可以排成一本书。</p>
+<p>但是这个方法也有问题。至于是什么问题呢？本人对此有一些不成熟的思考：</p>
+<p>我们先从llama3的训练中的一个细节出发：<a href="https://zhida.zhihu.com/search?content_id=259770281&amp;content_type=Article&amp;match_order=1&amp;q=Attention+is+All+You+Need&amp;zhida_source=entity">Attention is All You Need</a>这篇论文中模型的训练，与<a href="https://zhida.zhihu.com/search?content_id=259770281&amp;content_type=Article&amp;match_order=1&amp;q=BERT&amp;zhida_source=entity">BERT</a>的训练，从它们的数据集中拿出某一个sample，那大概率是填不满上下文长度的，于是需要对上下文进行padding来达成固定长度。假设上下文长度为16K，甲sample的序列长度为1K，乙sample的序列长度为8K，两者都填充到了16K，开销上来看是差不多的，因为数据的规模一样大，都是一样计算（猜测可能内部有一些优化，但是不会差太多），但是从直觉上来说，应该是乙sample包含的有效信息更多，更加利于模型优化。</p>
+<p>于是，很自然的，当模型上下文长度比较大，没多少sample能填满时，一个输入的序列应该由多个sample拼接而成，凑成一个比较接近上下文长度的序列，充分利用算力。当然了，为了防止某一个sample中的token进行注意力计算时，去查询了其它sample的token，mask也要进行一些改造。不过本篇文章的重点不是这个。</p>
+<p>在这种情况下，我们其实希望位置编码的信息要有某种“等价性”：无论其中一个sample在哪个位置，位置编码信息应该不影响位置的表达。一个sample在拼接过程中被排在第一个，中间的位置，还是最后的位置，位置编码信息都应该具有某种共通的性质，因为这句话无论排在哪都是同一句话，位置编码出的向量都应该包含相同的信息。</p>
+<p>这种特征的“空间平移不变性”，让人联想到CNN对于特征位置的不敏感。原因是CNN天生擅长捕捉像素相对位置的信息，毕竟本身结构的设计就是为了考虑相对位置。</p>
+<p>所以要实现这种对于空间的绝对位置不敏感，无论在序列中的哪个位置都能表达相同的模式的编码方式，考虑相对位置信息很重要。</p>
+<p>这么来看，原来的绝对位置编码的方式其实就有点不太合适了。为什么呢？我们观察一下原来绝对位置编码使用的Sinusoidal 函数：
+$$
+p_{i,2t}=\sin(k/10000^{2t/d}) \ p_{i,2t+1}=\cos(k/10000^{2t/d})
+$$
+<img src="https://pic2.zhimg.com/v2-23b21d0c383621cdcd19f2d007a61cb7_1440w.jpg" alt="网上随便找的图"></p>
+<p>可以看到，Sinusoidal 函数基本不强调”相对位置信息“，不同的位置，甚至连变化的feature都不是同一个，例如，在position大约为0-5时，相邻位置编码信息在大于40的feature上几乎无变化。而当position增大后，feature较大的位置也发生了变化。位置之间的差距甚至都不是同一个feature，都不是一个方面的比较。</p>
+<p>绝对位置编码错开了不同位置间差距的feature的位置，虽然充分利用了语义向量中的每个feature，但是也基本毁灭了相对位置信息的一致性。这使得同一个sample被拼接到开头，中间与结尾的位置信息都不太一样，模型需要花费额外的参数来去学习这种没有规律的不同。仿佛就是同样一句话只是因为开头被放在了不同位置，token之间的位置关系就变了。</p>
+<p>现在我们放远视角，我们不仅关心llama3训练这种一输入多样本的情况。考虑大多数文章。同样一句话在文章的开头与结尾虽然有不同的绝对位置信息，但也应该具有相同的相对位置信息，而不是相对位置信息有很大差别。</p>
+<p>为了解决这个问题，我们人为地设计一种可以在绝对位置信息的基础上表达相对位置信息的规律，这样模型能很容易地学习到这个规律。这就有了RoPE。而RoPE选择的规律是角度。</p>
+<h2 id="rope旋转位置编码">
+<a class="header-anchor" href="#rope%e6%97%8b%e8%bd%ac%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81"></a>
+RoPE，旋转位置编码
+</h2><p>与绝对位置编码不同，RoPE是在q，k，v生成之后，对q与k做手脚，来附加位置信息。附加完后，q，k再正常计算attn score，然后对v进行加权和（attention的正常流程）。</p>
+<p>本人数学水平堪忧，中间过程怕讲错，所以这里直接看结果的几个式子：
+$$
+f_{q, k}(x_m, m) = R^{d}<em>{\Theta, m}W</em>{q,k}x_m
+$$
+上面这个式子就是我们想要的这样一个编码函数的表达式：它接受输入 (第m个token进行词嵌入后得到的向量），以及位置m，输出编码后的向量 .这就是我们的目标，很简单纯粹。</p>
+<p>右侧该函数的形式是 与两个矩阵相乘（分别是 与 ，这里W下标既有q又有k的意思其实是，当想编码的是q时，使用Wq，当想编码的是k时，使用Wk.</p>
+<p>所以编码函数也能这么写：
+$$
+f_q(q_m,m)=R^d_{\Theta,m}q_m\ f_k(k_m,m)=R^d_{\Theta,m}k_m
+$$
+其实就是把q与k分别乘以同一个编码矩阵 .</p>
+<p>然后我们来看看这个编码矩阵：
+$$
+\begin{array} {c@{}c}   R^d_{\Theta,m} = &amp;    \begin{pmatrix}     \cos m\theta_0 &amp; -\sin m\theta_0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \     \sin m\theta_0 &amp; \cos m\theta_0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \     0 &amp; 0 &amp; \cos m\theta_1 &amp; -\sin m\theta_1 &amp; \cdots &amp; 0 &amp; 0 \     0 &amp; 0 &amp; \sin m\theta_1 &amp; \cos m\theta_1  &amp; \cdots &amp; 0 &amp; 0 \     \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots \     0 &amp; 0 &amp; 0 &amp; 0 &amp; &hellip; &amp; \cos m\theta_{d/2-1} &amp; -\sin m\theta_{d/2-1} \     0 &amp; 0 &amp; 0 &amp; 0 &amp; &hellip; &amp; \sin m\theta_{d/2-1} &amp; \cos m\theta_{d/2-1}   \end{pmatrix} \end{array}
+$$
+看着有点复杂，但是我们先拿出来第一部分：
+$$
+\begin{array} {c@{}c}  r^d_{\theta_0,m}=  \begin{pmatrix} \cos m\theta_0 &amp; -\sin m\theta_0 \ \sin m\theta_0 &amp; \cos m\theta_0 \end{pmatrix} \end{array} \
+$$
+按照矩阵乘法的规则，它会作用这样一个向量（其它位置都是0，相当于不作用，不考虑）:
+$$
+\begin{array} {c@{}c}  x_{m,part_0} =  \begin{pmatrix} x_0\ x_1 \end{pmatrix} \end{array} \
+$$
+观察这个第一部分的编码矩阵 ,不难发现这其实是个旋转矩阵（以前学的图形学勉勉强强用上了点皮毛hhh），它右乘 的效果，就是将这个向量逆时针旋转 .</p>
+        
+        <hr><p>Published on 2025-07-02 at <a href='//localhost:1313/'></a>, last modified on 2025-07-02</p>]]>
+      </description>
+      
+        <category>深度学习</category>
+      
+    </item>
+    
+  </channel>
+</rss>

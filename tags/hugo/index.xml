@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hugo on </title>
+    <link>http://localhost:1313/tags/hugo/</link>
+    <description>Recent content from </description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    
+    <managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor>
+    <webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster>
+    
+    <copyright>All articles on this blog are licensed under the BY-NC-SA license agreement unless otherwise stated. Please indicate the source when reprinting!</copyright>
+    
+    <lastBuildDate>Wed, 02 Jul 2025 09:56:24 +0800</lastBuildDate>
+    
+    
+    <atom:link href="http://localhost:1313/tags/hugo/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Test copy</title>
+      <link>http://localhost:1313/post/test-copy/</link>
+      <pubDate>Wed, 02 Jul 2025 09:56:24 &#43;0800</pubDate>
+      <author>zpeiyu11@gamil.com (GlowLED)</author>
+      <guid>http://localhost:1313/post/test-copy/</guid>
+      <description>
+        <![CDATA[<h1>Test copy</h1><p>Author: GlowLED(zpeiyu11@gamil.com)</p>
+        
+          <p>Test</p>
+<p>这是一篇测试文章，用来验证Hugo博客系统是否正常工作。</p>
+        
+        <hr><p>Published on 2025-07-02 at <a href='http://localhost:1313/'></a>, last modified on 2025-07-02</p>]]>
+      </description>
+      
+        <category>测试</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>Test</title>
+      <link>http://localhost:1313/post/test/</link>
+      <pubDate>Wed, 02 Jul 2025 09:56:24 &#43;0800</pubDate>
+      <author>zpeiyu11@gamil.com (GlowLED)</author>
+      <guid>http://localhost:1313/post/test/</guid>
+      <description>
+        <![CDATA[<h1>Test</h1><p>Author: GlowLED(zpeiyu11@gamil.com)</p>
+        
+          <p>Test</p>
+<p>这是一篇测试文章，用来验证Hugo博客系统是否正常工作。</p>
+        
+        <hr><p>Published on 2025-07-02 at <a href='http://localhost:1313/'></a>, last modified on 2025-07-02</p>]]>
+      </description>
+      
+        <category>测试</category>
+      
+    </item>
+    
+  </channel>
+</rss>
