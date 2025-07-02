@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>测试 on </title>
-    <link>http://localhost:1313/categories/%E6%B5%8B%E8%AF%95/</link>
+    <link>https://glowled.github.io/categories/%E6%B5%8B%E8%AF%95/</link>
     <description>Recent content from </description>
     <generator>Hugo</generator>
     <language>en</language>
     
-    <managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor>
-    <webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster>
+    <managingEditor>xxx@example.com (D-Sketon)</managingEditor>
+    <webMaster>xxx@example.com (D-Sketon)</webMaster>
     
     <copyright>All articles on this blog are licensed under the BY-NC-SA license agreement unless otherwise stated. Please indicate the source when reprinting!</copyright>
     
     <lastBuildDate>Wed, 02 Jul 2025 09:56:24 +0800</lastBuildDate>
     
     
-    <atom:link href="http://localhost:1313/categories/%E6%B5%8B%E8%AF%95/index.xml" rel="self" type="application/rss&#43;xml" />
+    <atom:link href="https://glowled.github.io/categories/%E6%B5%8B%E8%AF%95/index.xml" rel="self" type="application/rss&#43;xml" />
     
 
     
@@ -23,17 +23,19 @@
 
     <item>
       <title>Test copy</title>
-      <link>http://localhost:1313/post/test-copy/</link>
+      <link>https://glowled.github.io/post/test-copy/</link>
       <pubDate>Wed, 02 Jul 2025 09:56:24 &#43;0800</pubDate>
-      <author>zpeiyu11@gamil.com (GlowLED)</author>
-      <guid>http://localhost:1313/post/test-copy/</guid>
+      <author>xxx@example.com (D-Sketon)</author>
+      <guid>https://glowled.github.io/post/test-copy/</guid>
       <description>
-        <![CDATA[<h1>Test copy</h1><p>Author: GlowLED(zpeiyu11@gamil.com)</p>
+        <![CDATA[<h1>Test copy</h1><p>Author: D-Sketon(xxx@example.com)</p>
         
           <p>Test</p>
-<p>这是一篇测试文章，用来验证Hugo博客系统是否正常工作。</p>
+<p>这是一篇测试文章，用来验证Hugo博客系统是否正常工作。
+11111
+11111</p>
         
-        <hr><p>Published on 2025-07-02 at <a href='http://localhost:1313/'></a>, last modified on 2025-07-02</p>]]>
+        <hr><p>Published on 2025-07-02 at <a href='https://glowled.github.io/'></a>, last modified on 2025-07-02</p>]]>
       </description>
       
         <category>测试</category>
@@ -44,17 +46,17 @@
 
     <item>
       <title>Test</title>
-      <link>http://localhost:1313/post/test/</link>
+      <link>https://glowled.github.io/post/test/</link>
       <pubDate>Wed, 02 Jul 2025 09:56:24 &#43;0800</pubDate>
-      <author>zpeiyu11@gamil.com (GlowLED)</author>
-      <guid>http://localhost:1313/post/test/</guid>
+      <author>xxx@example.com (D-Sketon)</author>
+      <guid>https://glowled.github.io/post/test/</guid>
       <description>
-        <![CDATA[<h1>Test</h1><p>Author: GlowLED(zpeiyu11@gamil.com)</p>
+        <![CDATA[<h1>Test</h1><p>Author: D-Sketon(xxx@example.com)</p>
         
           <p>Test</p>
 <p>这是一篇测试文章，用来验证Hugo博客系统是否正常工作。</p>
         
-        <hr><p>Published on 2025-07-02 at <a href='http://localhost:1313/'></a>, last modified on 2025-07-02</p>]]>
+        <hr><p>Published on 2025-07-02 at <a href='https://glowled.github.io/'></a>, last modified on 2025-07-02</p>]]>
       </description>
       
         <category>测试</category>

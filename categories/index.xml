@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on </title>
-    <link>http://localhost:1313/categories/</link>
+    <link>https://glowled.github.io/categories/</link>
     <description>Recent content from </description>
     <generator>Hugo</generator>
     <language>en</language>
     
-    <managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor>
-    <webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster>
+    <managingEditor>xxx@example.com (D-Sketon)</managingEditor>
+    <webMaster>xxx@example.com (D-Sketon)</webMaster>
     
     <copyright>All articles on this blog are licensed under the BY-NC-SA license agreement unless otherwise stated. Please indicate the source when reprinting!</copyright>
     
     <lastBuildDate></lastBuildDate>
     
     
-    <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss&#43;xml" />
+    <atom:link href="https://glowled.github.io/categories/index.xml" rel="self" type="application/rss&#43;xml" />
     
 
     
