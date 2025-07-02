@@ -29,7 +29,7 @@ timeFormat: "2006-01-02 15:04:05"
 author: GlowLED
 email: zpeiyu11@gamil.com
 description: "一个混吃等死的普通人"
-subtitle: "欢迎来到我的后花园！"
+subtitle: "Welcome to GlowLED's Backyard!"
 
 banner: "images/banner_yanami.jpg"
 # You can also write it in the form of the following url
@@ -76,29 +76,7 @@ excerpt_link: Read More
 # Make sure your code snippet is safeHTML
 injector:
   head_begin: # Inject code snippet right after <head>
-  head_end: |-
-    <style>
-      /* 调整 subtitle 字号 */
-      .header-subtitle {
-        font-size: 1.3rem !important;
-      }
-      .site-subtitle {
-        font-size: 1.3rem !important;
-      }
-      /* 针对不同屏幕尺寸的响应式调整 */
-      @media (max-width: 768px) {
-        .header-subtitle,
-        .site-subtitle {
-          font-size: 1.1rem !important;
-        }
-      }
-      @media (min-width: 1200px) {
-        .header-subtitle,
-        .site-subtitle {
-          font-size: 1.5rem !important;
-        }
-      }
-    </style>
+  head_end: 
   body_begin: # Inject code snippet right after <body>
   body_end: # Inject code snippet right before </body>
   sidebar_begin: # Inject code snippet right after <aside>
