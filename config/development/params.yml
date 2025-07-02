@@ -76,7 +76,29 @@ excerpt_link: Read More
 # Make sure your code snippet is safeHTML
 injector:
   head_begin: # Inject code snippet right after <head>
-  head_end: # Inject code snippet right before </head>
+  head_end: |-
+    <style>
+      /* 调整 subtitle 字号 */
+      .header-subtitle {
+        font-size: 1.3rem !important;
+      }
+      .site-subtitle {
+        font-size: 1.3rem !important;
+      }
+      /* 针对不同屏幕尺寸的响应式调整 */
+      @media (max-width: 768px) {
+        .header-subtitle,
+        .site-subtitle {
+          font-size: 1.1rem !important;
+        }
+      }
+      @media (min-width: 1200px) {
+        .header-subtitle,
+        .site-subtitle {
+          font-size: 1.5rem !important;
+        }
+      }
+    </style>
   body_begin: # Inject code snippet right after <body>
   body_end: # Inject code snippet right before </body>
   sidebar_begin: # Inject code snippet right after <aside>
