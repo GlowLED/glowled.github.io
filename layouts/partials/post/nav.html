@@ -7,7 +7,7 @@
       <div class="article-nav-link-wrap article-nav-link-left">
         {{- if and .PrevInSection.Params.cover (not (strings.HasPrefix .PrevInSection.Params.cover "rgb")) -}}
           <img
-            data-src="{{ .PrevInSection.Params.cover | relURL }}"
+            data-src="{{ .PrevInSection.Params.cover }}"
             data-sizes="auto"
             alt="{{ .PrevInSection.Title }}"
             class="lazyload"

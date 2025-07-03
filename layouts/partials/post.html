@@ -41,7 +41,7 @@
     >
       {{- if and $page.Params.cover (not (hasPrefix $page.Params.cover "rgb")) -}}
         <img
-          data-src="{{ $page.Params.cover | relURL }}"
+          data-src="{{ $page.Params.cover }}"
           data-sizes="auto"
           alt="{{ $page.Title }}"
           class="lazyload"

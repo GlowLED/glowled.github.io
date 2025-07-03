@@ -11,7 +11,7 @@ mermaid: false
 math: true
 draft: false
 
-cover: "post_images/RoPE旋转位置编码.jpg"
+cover: "images/RoPE旋转位置编码.jpg"
 
 categories: ["深度学习"]
 tags: ["手搓大模型计划", "技术"]
