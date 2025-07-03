@@ -300,6 +300,22 @@ body [data-aos="zoom-in"] {
   content: "\e630";
 }
 
+.icon-github:before {
+  content: "\e619";
+}
+
+.icon-bilibili:before {
+  content: "\e603";
+}
+
+.icon-zhihu:before {
+  content: "\e62e";
+}
+
+.icon-steam:before {
+  content: "\e624";
+}
+
 .sidebar-btn-wrapper .sidebar-toc-btn:before {
   font-family: "iconfont";
   content: "\e633";
@@ -3540,6 +3556,31 @@ mjx-container::-webkit-scrollbar {
 
 .sidebar-social-icon:hover {
   transform: scale(1.2);
+}
+
+.icon-github {
+  color: #191717;
+  transition: 1;
+}
+
+[data-theme="dark"] .icon-github {
+  color: #bc88ff;
+}
+
+.icon-bilibili {
+  color: #00a1d6;
+}
+
+.icon-zhihu {
+  color: #0084ff;
+}
+
+.icon-steam {
+  color: #171a21;
+}
+
+[data-theme="dark"] .icon-steam {
+  color: #bc88ff;
 }
 
 .sidebar-menu {
