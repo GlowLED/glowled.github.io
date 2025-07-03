@@ -2618,6 +2618,10 @@ mjx-container::-webkit-scrollbar {
   background-color: var(--red-1);
 }
 
+.giscus-comment {
+  width: auto;
+}
+
 .wl-content,
 .vcontent,
 .gt-header-preview.markdown-body,
