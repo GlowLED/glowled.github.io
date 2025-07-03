@@ -1,34 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>深度学习 on GlowLED的后花园</title>
-    <link>https://glowled.github.io/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
-    <description>Recent content from GlowLED的后花园</description>
-    <generator>Hugo</generator>
-    <language>zh-cn</language>
-    
-    <managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor>
-    <webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster>
-    
-    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
-    
-    <lastBuildDate>Wed, 02 Jul 2025 13:22:54 +0800</lastBuildDate>
-    
-    
-    <atom:link href="https://glowled.github.io/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss&#43;xml" />
-    
-
-    
-    
-
-    <item>
-      <title>RoPE旋转位置编码学习笔记与代码实现</title>
-      <link>https://glowled.github.io/post/rope%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81/</link>
-      <pubDate>Wed, 02 Jul 2025 13:22:54 &#43;0800</pubDate>
-      <author>zpeiyu11@gamil.com (GlowLED)</author>
-      <guid>https://glowled.github.io/post/rope%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81/</guid>
-      <description>
-        <![CDATA[<h1>RoPE旋转位置编码学习笔记与代码实现</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>深度学习 on GlowLED的后花园</title><link>https://glowled.github.io/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Wed, 02 Jul 2025 13:22:54 +0800</lastBuildDate><atom:link href="https://glowled.github.io/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml"/><item><title>RoPE旋转位置编码学习笔记与代码实现</title><link>https://glowled.github.io/post/rope%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81/</link><pubDate>Wed, 02 Jul 2025 13:22:54 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://glowled.github.io/post/rope%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81/</guid><description>
+<![CDATA[<h1>RoPE旋转位置编码学习笔记与代码实现</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <blockquote>
 <p>最近想写点torch，就打算手搓个llm预训练，于是就去拿llama3开刀。尝试去实现久闻大名的RoPE（旋转位置编码）的时候，搜到了这篇文章，然后就直接开看。奈何本人数学水平实在太差，横竖看不进去，总是不太能理解。于是就干脆对着公式写代码，经过一段痛苦的时间后，勉强挤出几十行代码，才算是对RoPE有了一些不严谨的理解。</p></blockquote>
@@ -101,12 +72,4 @@ $$<p>
 看着有点复杂，但是我们先拿出来第一部分：
 </p>
         
-        <hr><p>本文2025-07-02首发于<a href='https://glowled.github.io/'>GlowLED的后花园</a>，最后修改于2025-07-02</p>]]>
-      </description>
-      
-        <category>深度学习</category>
-      
-    </item>
-    
-  </channel>
-</rss>
+        <hr><p>本文2025-07-02首发于<a href='https://glowled.github.io/'>GlowLED的后花园</a>，最后修改于2025-07-02</p>]]></description><category>深度学习</category></item></channel></rss>
