@@ -29,8 +29,7 @@ timeFormat: "2006-01-02 15:04:05"
 author: GlowLED
 email: zpeiyu11@gamil.com
 description: "一个混吃等死的普通人"
-title: "GlowLED's Backyard"
-subtitle: "Welcome to GlowLED's Backyard!"
+subtitle: "Welcome!"
 
 banner: "images/banner_yanami.jpg"
 # You can also write it in the form of the following url
@@ -370,10 +369,10 @@ algolia_search:
 preloader:
   enable: true
   text: 
-    zh-CN: 少女祈祷中...
-    zh-TW: 少女祈禱中...
-    en: Loading...
-    ja: 少女祈祷中...
+    zh-CN: 正在打开封印...
+    zh-TW: 正在開啟封印...
+    en: Opening the seal...
+    ja: 封印を開いています...
   icon: # default use inline svg for fast speed, you can use a image url, like '/images/taichi.png'
   rotate: true # whether to rotate the icon
 
@@ -520,7 +519,7 @@ home_categories:
   enable: true
   content:
     - categories: '深度学习'
-      cover: # empty means random cover
+      cover: 'images/深度学习.jpg'
     - categories:
       cover:
 
