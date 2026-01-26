@@ -1,8 +1,29 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>技术 on GlowLED的后花园</title><link>https://blog.glowled.top/tags/%E6%8A%80%E6%9C%AF/</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Sat, 05 Jul 2025 10:18:57 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/tags/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml"/><item><title>GQA分组查询注意力学习笔记与代码实现</title><link>https://blog.glowled.top/post/gqa-group-query-attention-notes-and-implementation/</link><pubDate>Sat, 05 Jul 2025 10:18:57 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/gqa-group-query-attention-notes-and-implementation/</guid><description>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>技术 on GlowLED的后花园</title><link>https://blog.glowled.top/tags/%E6%8A%80%E6%9C%AF/</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Mon, 26 Jan 2026 19:09:14 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/tags/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml"/><item><title>可微渲染-随笔</title><link>https://blog.glowled.top/post/differentiable-rendering/</link><pubDate>Mon, 26 Jan 2026 19:09:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/differentiable-rendering/</guid><description>
+<![CDATA[<h1>可微渲染-随笔</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
+        
+          <blockquote>
+<p>本篇是随笔, 也就是随便写写一些想法, 这些想法内容不足以成文, 因此也并不考究.</p>
+</blockquote>
+<blockquote>
+<p>我之前只接触过传统CG, 不如说传统CG都没怎么学明白. 实际上基本只学了Path Tracing, 确实是简单又出效果, 但是这导致我图形学数学基础非常烂. 最近由于要研究3DGS, 一大堆术语都是听过但是不理解. 比如球谐函数, 可微渲染种种. 我觉得不写出来就学得不踏实&hellip;&hellip;</p>
+<p>所以会更一些图形学相关的下饭小文章, 纯粹是自己的输出, 没有太在乎可读性. 不过我是比较难接受抽象想法的人, 只有把事情想得直观一些才能理解。所以应该(?)会比较简单.</p>
+</blockquote>
+<p>试想一下我们的计算机图形学渲染过程是啥样的:
+</p>
+$$
+场景参数 + 算法 \rightarrow 图像
+$$<p>
+嗯, 算法好理解, 也就是我们整的那些<strong>渲染管线</strong>, 一般来说就是些坐标变换, 最后有个光栅化操作.</p>
+<p><strong>场景参数</strong>是啥? 实际上就是你对场景的控制, 一些可设定的值. 例如, 当场景中只能有一个长方体时, 你的场景参数或许就是<code>长方体顶点坐标</code>, <code>长方体旋转角度</code>&hellip;&hellip;总之, 这些参数唯一确定了场景中的一个长方体. 如果这个长方体表面还有材质, 材质也有一些参数, 例如<code>金属度</code>, <code>折射率</code>等. 这些东西整个加在一起, 就是场景参数. 也就是在所讨论的渲染过程中, <strong>你能够修改的场景部分</strong>.</p>
+<p>任务: 你现在有一个场景$S$, 其参数空间为$P=\{p_i\}$. 某个参数下的场景用$S(p_i)$表示. 你经过一个渲染算法$f$, 得到了一个图像$G$. 显然, $G=f(S(p_i))$. 你现在有1张(可以多张, 但这里简化问题为1张)图片$G'$. 请你在$P$中给出参数$p$, 使得$G = f(S(p)) = G'$.</p>
+<p>也就是说, 你现在知道渲染算法, 也知道渲染结果, 需要得到<strong>场景参数</strong>. 也就是<strong>根据图片反推场景实际是怎样的</strong>. 如果是你的话, 你会怎么办?</p>
+        
+        <hr><p>本文2026-01-26首发于<a href='https://blog.glowled.top/'>GlowLED的后花园</a>，最后修改于2026-01-26</p>]]></description><category>随笔</category></item><item><title>GQA分组查询注意力学习笔记与代码实现</title><link>https://blog.glowled.top/post/gqa-group-query-attention-notes-and-implementation/</link><pubDate>Sat, 05 Jul 2025 10:18:57 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/gqa-group-query-attention-notes-and-implementation/</guid><description>
 <![CDATA[<h1>GQA分组查询注意力学习笔记与代码实现</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <blockquote>
-<p>上一篇文章搞定了RoPE，接下来该实现llama中使用的另外一个关键技术：Group Query Attention，分组查询注意力机制。             相比RoPE，个人觉得这个好理解一些，不过代码实现上难度大一些。当然了，我还是给它实现出来了。不过有关解码的部分，GQA的kv cache与原来的MHA不太一样，目前我的项目还没做到解码的部分，等我的SimpleLLM项目实现到这一部分应该会在后面加上，或者专门写一篇文章讲讲解码的全过程实现，里面会包含这几种注意力机制（还有MQA）的解码。</p></blockquote>
+<p>上一篇文章搞定了RoPE，接下来该实现llama中使用的另外一个关键技术：Group Query Attention，分组查询注意力机制。             相比RoPE，个人觉得这个好理解一些，不过代码实现上难度大一些。当然了，我还是给它实现出来了。不过有关解码的部分，GQA的kv cache与原来的MHA不太一样，目前我的项目还没做到解码的部分，等我的SimpleLLM项目实现到这一部分应该会在后面加上，或者专门写一篇文章讲讲解码的全过程实现，里面会包含这几种注意力机制（还有MQA）的解码。</p>
+</blockquote>
 <p><strong>手搓LLM架构与训练过程：</strong><a href="https://github.com/GlowLED/SimpleLLM">SimpleLLM</a></p>
 <p>在讲解GQA之前，我们先讲讲最开始的MHA（Multi Head Attention，多头注意力机制），与改进后的MQA（Multi Query Attention，多查询注意力机制）。</p>
 <h2 id="mha与mqa">
@@ -51,7 +72,8 @@ GQA，分组查询注意力机制
 <![CDATA[<h1>RoPE旋转位置编码学习笔记与代码实现</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <blockquote>
-<p>最近想写点torch，就打算手搓个llm预训练，于是就去拿llama3开刀。尝试去实现久闻大名的RoPE（旋转位置编码）的时候，搜到了这篇文章，然后就直接开看。奈何本人数学水平实在太差，横竖看不进去，总是不太能理解。于是就干脆对着公式写代码，经过一段痛苦的时间后，勉强挤出几十行代码，才算是对RoPE有了一些不严谨的理解。</p></blockquote>
+<p>最近想写点torch，就打算手搓个llm预训练，于是就去拿llama3开刀。尝试去实现久闻大名的RoPE（旋转位置编码）的时候，搜到了这篇文章，然后就直接开看。奈何本人数学水平实在太差，横竖看不进去，总是不太能理解。于是就干脆对着公式写代码，经过一段痛苦的时间后，勉强挤出几十行代码，才算是对RoPE有了一些不严谨的理解。</p>
+</blockquote>
 <p><strong>最近心血来潮整的手搓llm结构与训练过程：</strong><a href="http://github.com/GlowLED/SimpleLLM">SimpleLLM</a> (应该会摆掉，应该&hellip;)</p>
 <h2 id="绝对位置编码的缺陷">
 <a class="header-anchor" href="#%e7%bb%9d%e5%af%b9%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81%e7%9a%84%e7%bc%ba%e9%99%b7"></a>

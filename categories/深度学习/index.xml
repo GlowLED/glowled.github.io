@@ -2,7 +2,8 @@
 <![CDATA[<h1>GQA分组查询注意力学习笔记与代码实现</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <blockquote>
-<p>上一篇文章搞定了RoPE，接下来该实现llama中使用的另外一个关键技术：Group Query Attention，分组查询注意力机制。             相比RoPE，个人觉得这个好理解一些，不过代码实现上难度大一些。当然了，我还是给它实现出来了。不过有关解码的部分，GQA的kv cache与原来的MHA不太一样，目前我的项目还没做到解码的部分，等我的SimpleLLM项目实现到这一部分应该会在后面加上，或者专门写一篇文章讲讲解码的全过程实现，里面会包含这几种注意力机制（还有MQA）的解码。</p></blockquote>
+<p>上一篇文章搞定了RoPE，接下来该实现llama中使用的另外一个关键技术：Group Query Attention，分组查询注意力机制。             相比RoPE，个人觉得这个好理解一些，不过代码实现上难度大一些。当然了，我还是给它实现出来了。不过有关解码的部分，GQA的kv cache与原来的MHA不太一样，目前我的项目还没做到解码的部分，等我的SimpleLLM项目实现到这一部分应该会在后面加上，或者专门写一篇文章讲讲解码的全过程实现，里面会包含这几种注意力机制（还有MQA）的解码。</p>
+</blockquote>
 <p><strong>手搓LLM架构与训练过程：</strong><a href="https://github.com/GlowLED/SimpleLLM">SimpleLLM</a></p>
 <p>在讲解GQA之前，我们先讲讲最开始的MHA（Multi Head Attention，多头注意力机制），与改进后的MQA（Multi Query Attention，多查询注意力机制）。</p>
 <h2 id="mha与mqa">
@@ -51,7 +52,8 @@ GQA，分组查询注意力机制
 <![CDATA[<h1>RoPE旋转位置编码学习笔记与代码实现</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <blockquote>
-<p>最近想写点torch，就打算手搓个llm预训练，于是就去拿llama3开刀。尝试去实现久闻大名的RoPE（旋转位置编码）的时候，搜到了这篇文章，然后就直接开看。奈何本人数学水平实在太差，横竖看不进去，总是不太能理解。于是就干脆对着公式写代码，经过一段痛苦的时间后，勉强挤出几十行代码，才算是对RoPE有了一些不严谨的理解。</p></blockquote>
+<p>最近想写点torch，就打算手搓个llm预训练，于是就去拿llama3开刀。尝试去实现久闻大名的RoPE（旋转位置编码）的时候，搜到了这篇文章，然后就直接开看。奈何本人数学水平实在太差，横竖看不进去，总是不太能理解。于是就干脆对着公式写代码，经过一段痛苦的时间后，勉强挤出几十行代码，才算是对RoPE有了一些不严谨的理解。</p>
+</blockquote>
 <p><strong>最近心血来潮整的手搓llm结构与训练过程：</strong><a href="http://github.com/GlowLED/SimpleLLM">SimpleLLM</a> (应该会摆掉，应该&hellip;)</p>
 <h2 id="绝对位置编码的缺陷">
 <a class="header-anchor" href="#%e7%bb%9d%e5%af%b9%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81%e7%9a%84%e7%bc%ba%e9%99%b7"></a>
