@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>强化学习 on GlowLED的后花园</title><link>https://blog.glowled.top/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Wed, 28 Jan 2026 14:42:14 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml"/><item><title>强化学习基础-粗略过一遍</title><link>https://blog.glowled.top/post/reinforcement-learning-base-quickpass/</link><pubDate>Wed, 28 Jan 2026 14:42:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/reinforcement-learning-base-quickpass/</guid><description>
+<![CDATA[<h1>强化学习基础-粗略过一遍</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
+        
+          <h2 id="基本概念">
+<a class="header-anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5"></a>
+基本概念
+</h2><h3 id="场景描述">
+<a class="header-anchor" href="#%e5%9c%ba%e6%99%af%e6%8f%8f%e8%bf%b0"></a>
+场景描述
+</h3><ul>
+<li>
+<p>Environment: 环境. 是一个外部系统, 智能体处于这个系统中，能够感知到这个系统并且能够基于感知到的状态做出一定的行动。</p>
+</li>
+<li>
+<p>state/observation: 状态/观测. 状态反映了世界的全部信息, 观测是状态的子集.</p>
+</li>
+<li>
+<p>agent: 智能体. 做出决策的个体.</p>
+</li>
+<li>
+<p>action: 动作. 不同的环境允许不同种类的动作，在给定的环境中，有效动作的集合经常被称为动作空间(action space)，包括离散动作空间(discrete action spaces)和连续动作空间(continuous action spaces).</p>
+</li>
+<li>
+<p>reward: 奖励. 是由环境给的一个标量的反馈信号(scalar feedback signal).</p>
+</li>
+</ul>
+<p>强化学习设想中, agent在environment中行动, 在某时刻获取observation, 采取action并促使environment做出改变. 在某些时刻可以获取reward. 强化学习的目标是使得reward总和最大化.</p>
+<h3 id="公理化">
+<a class="header-anchor" href="#%e5%85%ac%e7%90%86%e5%8c%96"></a>
+公理化
+</h3><p>动作使用$ a $表示, 状态(观测)使用$ s $表示, 时刻使用$ t $表示.</p>
+<ol>
+<li>
+<p><strong>Policy</strong>: 策略. 用于决定下一步做出什么行动.</p>
+<p>如果是确定性的, 一般用$ \mu $表示:</p>
+</li>
+</ol>
+$$
+a_t=\mu(s_t)
+$$<p>​	如果是随机性的, 一般用$ \pi $表示:
+</p>
+$$
+a_t \sim \pi(\cdot|s_t)
+$$<ol start="2">
+<li><strong>State Transition</strong>: 状态转移. 可以是确定的也可以是随机的. 一般认为是随机的. 可以用<strong>状态密度函数</strong>来表示:</li>
+</ol>
+$$
+p(s'|s, a) = \mathbb{P}(S'=s'|S=s, A=a)
+$$<ol start="3">
+<li>
+<p><strong>Return</strong>: 回报. 又称<strong>cumulated future reward</strong>, 一般表示为$ U $, 定义为:
+</p>
+        
+        <hr><p>本文2026-01-28首发于<a href='https://blog.glowled.top/'>GlowLED的后花园</a>，最后修改于2026-01-28</p>]]></description><category>强化学习</category><category>深度学习</category></item></channel></rss>
