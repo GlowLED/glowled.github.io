@@ -1,4 +1,40 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>强化学习 on GlowLED的后花园</title><link>https://blog.glowled.top/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Wed, 28 Jan 2026 14:42:14 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml"/><item><title>强化学习基础-粗略过一遍</title><link>https://blog.glowled.top/post/reinforcement-learning-base-quickpass/</link><pubDate>Wed, 28 Jan 2026 14:42:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/reinforcement-learning-base-quickpass/</guid><description>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>强化学习 on GlowLED的后花园</title><link>https://blog.glowled.top/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Thu, 29 Jan 2026 17:10:14 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml"/><item><title>Deep Q Network (DQN)-随笔</title><link>https://blog.glowled.top/post/deep-q-network/</link><pubDate>Thu, 29 Jan 2026 17:10:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/deep-q-network/</guid><description>
+<![CDATA[<h1>Deep Q Network (DQN)-随笔</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
+        
+          <h2 id="基本方法">
+<a class="header-anchor" href="#%e5%9f%ba%e6%9c%ac%e6%96%b9%e6%b3%95"></a>
+基本方法
+</h2><p><strong>Deep Q Network</strong>的核心思想是使用神经网络表示:
+</p>
+$$
+Q_\pi(s_t, a_t) = Net_\theta(s_t, a_t)
+$$<p>
+其中, 不同的参数$ \theta $就对应了不同的$ \pi $. 策略$ \pi $被隐式表达了. 假设我们使得网络学习到了最好的参数$ \theta^* $. 则它应该满足:
+</p>
+$$
+Q^*(s_t, a_t) = Net_{\theta^*}(s_t, a_t)
+$$<p>
+$ Q^* $是<strong>Optimal Action-Value Function</strong>, 最优行动价值函数, 它的值绝对是正确的, 即它的值一定是回报的期望.</p>
+<p>对于Agent来说, 它采取动作的方法是:
+</p>
+$$
+a^* = \mathop{\arg\max}\limits_{a}\ Net_{\theta^*}(s_t, a)
+$$<p>
+一般来说, 神经网络的实现是同时输出所有动作的$ Q $值:
+</p>
+$$
+Net_\theta(s_t) = 
+\begin{bmatrix}
+Q_\pi(s_t, a_1) \\
+Q_\pi(s_t, a_2) \\
+Q_\pi(s_t, a_3) \\
+\vdots \\
+Q_\pi(s_t, a_n)
+\end{bmatrix}
+$$<p>
+这样效率更高, 也方便更泛化地学习.</p>
+        
+        <hr><p>本文2026-01-29首发于<a href='https://blog.glowled.top/'>GlowLED的后花园</a>，最后修改于2026-01-29</p>]]></description><category>深度学习</category><category>强化学习</category><category>随笔</category></item><item><title>强化学习基础-粗略过一遍</title><link>https://blog.glowled.top/post/reinforcement-learning-base-quickpass/</link><pubDate>Wed, 28 Jan 2026 14:42:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/reinforcement-learning-base-quickpass/</guid><description>
 <![CDATA[<h1>强化学习基础-粗略过一遍</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <h2 id="基本概念">

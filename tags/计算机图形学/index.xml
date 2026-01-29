@@ -1,25 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>计算机图形学 on GlowLED的后花园</title><link>https://blog.glowled.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Tue, 27 Jan 2026 22:29:14 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/index.xml" rel="self" type="application/rss+xml"/><item><title>体渲染-随笔</title><link>https://blog.glowled.top/post/volume-rendering/</link><pubDate>Tue, 27 Jan 2026 22:29:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/volume-rendering/</guid><description>
-<![CDATA[<h1>体渲染-随笔</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
-        
-          <blockquote>
-<p>本篇是随笔, 虽然写了很久, 但是乱写</p>
-</blockquote>
-<blockquote>
-<p>写了我好久, 感觉高数都还回去了.</p>
-<p>寒假是真的无聊&hellip;在22: 27看高数的绝望&hellip;</p>
-</blockquote>
-<h2 id="引入">
-<a class="header-anchor" href="#%e5%bc%95%e5%85%a5"></a>
-引入
-</h2><p><strong>体渲染</strong>是一种渲染模型, 也可以认为是一种渲染思路. 在Mesh的渲染中, 我们认为场景其实是<strong>面片+材质</strong>, 而体渲染认为物体应当是个<strong>有体积的东西</strong>. 光穿过物体, 在这个过程中不断与物体发生作用, 最后得到结果.</p>
-<p>体渲染的引入, 一开始是为了解决<strong>云, 烟雾</strong>这类物体的渲染. 可以认为, 面片渲染只考虑了<strong>光与物体表面的作用</strong>, 没有考虑光在物体内部的行为. 这在大部分物体上可能没有什么问题, 例如玻璃与金属, 几乎所有光学行为都发生在<strong>表面</strong>. 但是当问题复杂一些: 我想要体现水中的丁达尔效应, 我想要渲染逼真的云雾, 面片模型就难以胜任. 一种解决方法是将丁达尔效应建模成简单的射线, 再套用一个衰减函数. 但有时候云雾并不完全是这样的, 光也会在内部散射, 甚至粒子有自发光, 云雾并不均匀. 于是, 我们不如考虑光在场景中的<strong>整个行进过程</strong>, 而不是只考虑表面这种割裂情形. 这就是<strong>体渲染(Volume Rendering)</strong>.</p>
-<h2 id="体渲染的计算">
-<a class="header-anchor" href="#%e4%bd%93%e6%b8%b2%e6%9f%93%e7%9a%84%e8%ae%a1%e7%ae%97"></a>
-体渲染的计算
-</h2><p>体渲染的基本计算方法就是<strong>体渲染积分</strong>, 最简单的Ray-casting方法, 思路是从摄像头向屏幕上每个像素生成一条射线, <strong>沿射线积分</strong>辐射值, 得到最终的辐射值(RGB).</p>
-<p>具体来说, 假如某个射线由一个参数$ t $来表达$ \bold{r}(t) $, $ \bold{r}(t) $是一个三维坐标. 射线方向用$ \bold{d} $表示, $ \bold{d} $是三维的笛卡尔单位向量, 或者是二维的球坐标向量. 物体实际上由两个函数表示, 第一个是辐射值函数$ \bold{C}(\bold{r}(t), \bold{d}) $, 值为一个辐射值(RGB), 表示体在$ \bold{r}(t) $处以$ \bold{d} $方向观察时的&quot;发光&quot;值, 用于累积最终辐射值. 例如一个被一束光穿过的云雾, 如果观察射线垂直于这束光, 则我们应该可以看到$ \bold{C} $在光束经过的附近的值为这束光的颜色. 我想表达的是, 在这个模型中, 场景中光源对体的影响, <strong>已经考虑</strong>在$ \bold{C} $中了. 如果想要拆分出来, 需要从物理的手段, 对体渲染积分方程进行扩展. 第二个是密度函数$ \sigma(\bold{r}(t)) $, 其值为体在$ \bold{r}(t) $处的密度, 并且我们认为与观察方向无关. 密度的作用是<strong>计算光的遮挡</strong>: 你在$ \bold{r}(t) $处观察到的辐射, 会被视线上之前所有的体遮挡, 而密度就是各处的&quot;遮挡强度&quot;, 甚至可以把$ \sigma(\bold{r}(t)) $理解成&quot;<strong>单位长度削弱辐射值的比例</strong>&quot;. 例如, 我们可以认为不透明物体的内部密度非常大, 使得只有表面的辐射值能被累积到像素, 即表现成物体表面的颜色. 而透明物体的内部密度很小, 几乎不阻挡后面的辐射.</p>
-        
-        <hr><p>本文2026-01-27首发于<a href='https://blog.glowled.top/'>GlowLED的后花园</a>，最后修改于2026-01-27</p>]]></description><category>随笔</category></item><item><title>可微渲染-随笔</title><link>https://blog.glowled.top/post/differentiable-rendering/</link><pubDate>Mon, 26 Jan 2026 19:09:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/differentiable-rendering/</guid><description>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>计算机图形学 on GlowLED的后花园</title><link>https://blog.glowled.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Mon, 26 Jan 2026 19:09:14 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/index.xml" rel="self" type="application/rss+xml"/><item><title>可微渲染-随笔</title><link>https://blog.glowled.top/post/differentiable-rendering/</link><pubDate>Mon, 26 Jan 2026 19:09:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/differentiable-rendering/</guid><description>
 <![CDATA[<h1>可微渲染-随笔</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <blockquote>
