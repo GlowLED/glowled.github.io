@@ -12,12 +12,16 @@ Policy-Based算法
 </h2><p>首先我们需要设计一个用于梯度上升的目标函数$ J(\theta) $. 直觉上来说, 我们希望策略获得的奖励期望最大, 即:
 </p>
 $$
+\begin{align*}
 J(\theta) = \mathbb{E}_\tau[R(\tau)]	\tag{1}
+\end{align*}
 $$<p>
 $ \tau $即轨迹(trajectory), 该式即对所有可能的轨迹, 求奖励的期望. 这个式子虽然没写$\theta$, 但是其实和$\theta$有关. 因为:
 </p>
 $$
+\begin{align*}
 \mathbb{E_\tau}[R(t)] = \sum_\tau P(\tau ; \theta)R(\tau)	\tag{2}
+\end{align*}
 $$<p>
 $\theta $可以影响轨迹$ \tau $的分布. 因此来影响期望. 接下来, 我们对目标函数求梯度:
 </p>
