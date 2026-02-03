@@ -1,4 +1,35 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GlowLED的后花园</title><link>https://blog.glowled.top/algolia.json</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Thu, 29 Jan 2026 17:10:14 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/index.xml" rel="self" type="application/rss+xml"/><item><title>Deep Q Network (DQN)笔记</title><link>https://blog.glowled.top/post/deep-q-network/</link><pubDate>Thu, 29 Jan 2026 17:10:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/deep-q-network/</guid><description>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GlowLED的后花园</title><link>https://blog.glowled.top/algolia.json</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Tue, 03 Feb 2026 15:12:14 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/index.xml" rel="self" type="application/rss+xml"/><item><title>策略梯度定理</title><link>https://blog.glowled.top/post/policy-gradient/</link><pubDate>Tue, 03 Feb 2026 15:12:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/policy-gradient/</guid><description>
+<![CDATA[<h1>策略梯度定理</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
+        
+          <h2 id="policy-based算法">
+<a class="header-anchor" href="#policy-based%e7%ae%97%e6%b3%95"></a>
+Policy-Based算法
+</h2><p>Value-Based算法试图学习$Q$函数, 通过评估每个动作得到回报的期望来获得一个理性的策略$\pi$. Policy-Based则直接学习策略$\pi$.</p>
+<p>因此, 我们先要显式定义$\pi$, 将其参数化为$\pi_\theta$. $\pi_\theta(s)$是一个分布$\mathbb{P}(\cdot|s; \theta)$. 而优化$\theta$可以使用梯度上升法. 即策略梯度方法.</p>
+<h2 id="策略梯度方法">
+<a class="header-anchor" href="#%e7%ad%96%e7%95%a5%e6%a2%af%e5%ba%a6%e6%96%b9%e6%b3%95"></a>
+策略梯度方法
+</h2><p>首先我们需要设计一个用于梯度上升的目标函数$ J(\theta) $. 直觉上来说, 我们希望策略获得的奖励期望最大, 即:
+</p>
+$$
+J(\theta) = \mathbb{E}_\tau[R(\tau)]	\tag{1}
+$$<p>
+$ \tau $即轨迹(trajectory), 该式即对所有可能的轨迹, 求奖励的期望. 这个式子虽然没写$\theta$, 但是其实和$\theta$有关. 因为:
+</p>
+$$
+\mathbb{E_\tau}[R(t)] = \sum_\tau P(\tau ; \theta)R(\tau)	\tag{2}
+$$<p>
+$\theta $可以影响轨迹$ \tau $的分布. 因此来影响期望. 接下来, 我们对目标函数求梯度:
+</p>
+$$
+\begin{align*}
+\nabla_\theta J(\theta) &= \nabla_\theta \sum_\tau P(\tau ; \theta)R(\tau) 	\tag{3.a}\\
+&= \sum_\tau R(\tau) \nabla_\theta P(\tau ; \theta)	\tag{3.b}
+\end{align*}
+$$<p>
+如果我们可以通过计算机计算或者估计这个梯度值, 我们就可以更新我们的策略参数.</p>
+        
+        <hr><p>本文2026-02-03首发于<a href='https://blog.glowled.top/'>GlowLED的后花园</a>，最后修改于2026-02-03</p>]]></description><category>强化学习</category><category>随笔</category></item><item><title>Deep Q Network (DQN)笔记</title><link>https://blog.glowled.top/post/deep-q-network/</link><pubDate>Thu, 29 Jan 2026 17:10:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/deep-q-network/</guid><description>
 <![CDATA[<h1>Deep Q Network (DQN)笔记</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <h2 id="基本方法">
