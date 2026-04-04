@@ -218,6 +218,68 @@
         URL.revokeObjectURL(blobUrl);
         return module2;
       };
+      (function() {
+        const quotes = [
+          "\u843D\u971E\u4E0E\u5B64\u9E5C\u9F50\u98DE\uFF0C\u79CB\u6C34\u5171\u957F\u5929\u4E00\u8272",
+          "\u7AF9\u6756\u8292\u978B\u8F7B\u80DC\u9A6C\uFF0C\u8C01\u6015\uFF1F\u4E00\u84D1\u70DF\u96E8\u4EFB\u5E73\u751F",
+          "\u4E14\u5C06\u65B0\u706B\u8BD5\u65B0\u8336\uFF0C\u8BD7\u9152\u8D81\u5E74\u534E",
+          "\u758F\u5F71\u6A2A\u659C\u6C34\u6E05\u6D45\uFF0C\u6697\u9999\u6D6E\u52A8\u6708\u9EC4\u660F",
+          "\u5C0F\u821F\u4ECE\u6B64\u901D\uFF0C\u6C5F\u6D77\u5BC4\u4F59\u751F",
+          "\u5C71\u4E0D\u8BA9\u5C18\uFF0C\u5DDD\u4E0D\u8F9E\u76C8",
+          "\u8FFD\u98CE\u8D76\u6708\u83AB\u505C\u7559\uFF0C\u5E73\u829C\u5C3D\u5904\u662F\u6625\u5C71",
+          "\u6D45\u4E88\u6DF1\u6DF1\uFF0C\u957F\u4E50\u672A\u592E",
+          "\u4E91\u5C71\u82CD\u82CD\uFF0C\u6C5F\u6C34\u6CF1\u6CF1",
+          "\u5FC3\u6709\u731B\u864E\uFF0C\u7EC6\u55C5\u8537\u8587",
+          "\u9189\u540E\u4E0D\u77E5\u5929\u5728\u6C34\uFF0C\u6EE1\u8239\u6E05\u68A6\u538B\u661F\u6CB3",
+          "\u4EBA\u751F\u5982\u9006\u65C5\uFF0C\u6211\u4EA6\u662F\u884C\u4EBA",
+          "\u6625\u98CE\u5F97\u610F\u9A6C\u8E44\u75BE\uFF0C\u4E00\u65E5\u770B\u5C3D\u957F\u5B89\u82B1",
+          "\u6D77\u7EB3\u767E\u5DDD\uFF0C\u6709\u5BB9\u4E43\u5927",
+          "\u8DEF\u6F2B\u6F2B\u5176\u4FEE\u8FDC\u516E\uFF0C\u543E\u5C06\u4E0A\u4E0B\u800C\u6C42\u7D22",
+          "\u5929\u751F\u6211\u6750\u5FC5\u6709\u7528\uFF0C\u5343\u91D1\u6563\u5C3D\u8FD8\u590D\u6765",
+          "\u91C7\u83CA\u4E1C\u7BF1\u4E0B\uFF0C\u60A0\u7136\u89C1\u5357\u5C71",
+          "\u660E\u6708\u677E\u95F4\u7167\uFF0C\u6E05\u6CC9\u77F3\u4E0A\u6D41",
+          "\u5927\u6F20\u5B64\u70DF\u76F4\uFF0C\u957F\u6CB3\u843D\u65E5\u5706",
+          "\u957F\u98CE\u7834\u6D6A\u4F1A\u6709\u65F6\uFF0C\u76F4\u6302\u4E91\u5E06\u6D4E\u6CA7\u6D77"
+        ];
+        const typedElement = document.querySelector(".typed-subtitle");
+        if (!typedElement) return;
+        let currentQuoteIndex = -1;
+        let currentCharIndex = 0;
+        let isDeleting = false;
+        let typingSpeed = 100;
+        let pauseTime = 2e3;
+        function getRandomQuote() {
+          let newIndex;
+          do {
+            newIndex = Math.floor(Math.random() * quotes.length);
+          } while (newIndex === currentQuoteIndex && quotes.length > 1);
+          currentQuoteIndex = newIndex;
+          return quotes[newIndex];
+        }
+        function typeEffect() {
+          const currentQuote = quotes[currentQuoteIndex];
+          if (isDeleting) {
+            typedElement.textContent = currentQuote.substring(0, currentCharIndex - 1);
+            currentCharIndex--;
+            typingSpeed = 50;
+          } else {
+            typedElement.textContent = currentQuote.substring(0, currentCharIndex + 1);
+            currentCharIndex++;
+            typingSpeed = 100;
+          }
+          if (!isDeleting && currentCharIndex === currentQuote.length) {
+            isDeleting = true;
+            typingSpeed = pauseTime;
+          } else if (isDeleting && currentCharIndex === 0) {
+            isDeleting = false;
+            getRandomQuote();
+            typingSpeed = 500;
+          }
+          setTimeout(typeEffect, typingSpeed);
+        }
+        getRandomQuote();
+        setTimeout(typeEffect, 500);
+      })();
     }
   });
   require_stdin();
