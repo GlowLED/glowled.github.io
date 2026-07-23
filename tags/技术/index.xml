@@ -1,4 +1,51 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>技术 on GlowLED的后花园</title><link>https://blog.glowled.top/tags/%E6%8A%80%E6%9C%AF/</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Mon, 20 Jul 2026 16:38:14 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/tags/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml"/><item><title>二十一世纪火柴编译目录</title><link>https://blog.glowled.top/post/torch-compile-tech-overview/</link><pubDate>Mon, 20 Jul 2026 16:38:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/torch-compile-tech-overview/</guid><description>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>技术 on GlowLED的后花园</title><link>https://blog.glowled.top/tags/%E6%8A%80%E6%9C%AF/</link><description>Recent content from GlowLED的后花园</description><generator>Hugo</generator><language>zh-CN</language><managingEditor>zpeiyu11@gamil.com (GlowLED)</managingEditor><webMaster>zpeiyu11@gamil.com (GlowLED)</webMaster><copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright><lastBuildDate>Thu, 23 Jul 2026 13:54:57 +0800</lastBuildDate><atom:link href="https://blog.glowled.top/tags/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml"/><item><title>一个自己的飞书云文档：Outline私有化部署</title><link>https://blog.glowled.top/post/outline-deploy/</link><pubDate>Thu, 23 Jul 2026 13:54:57 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/outline-deploy/</guid><description>
+<![CDATA[<h1>一个自己的飞书云文档：Outline私有化部署</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
+        
+          <p>感觉飞书云文档很好用，但是用那个写文档总是附属在某个组织下。我想要一个类似飞书云文档的好用的浏览器写文服务，不过也不需要那么复杂，在我的构想中是这样的：</p>
+<ul>
+<li>在一台个人服务器上部署服务</li>
+<li><strong>通过浏览器访问</strong>，进行编辑和渲染至少支持markdown语法集合的富文本</li>
+<li>服务端存储<strong>自动保存</strong>，实现方便的<strong>跨设备随时随地</strong>编写</li>
+<li><strong>身份验证</strong>，总不可能谁都能看能写</li>
+<li>附加项：基础的人员管理功能，可以和亲友一起用</li>
+</ul>
+<p>在和GPT大人chat了几个回合后，发现了Outline这个开源项目，和我的需求是最贴合的。<a href="https://github.com/outline/outline">仓库链接在这里</a>。正好最近整了台阿里云ECS 99元一年的 <strong>！？穷穷？！</strong> 服务器 <del>（饺子醋来了）</del> 。我一看这Outline仓库的docker部署十分甚至九分的简单，这不得整一个。于是就有了后面的事情。</p>
+<h2 id="前置准备">
+<a class="header-anchor" href="#%e5%89%8d%e7%bd%ae%e5%87%86%e5%a4%87"></a>
+前置准备
+</h2><p>在开始部署工作之前，先看看需要哪些东西吧！</p>
+<ul>
+<li>2核2G、40GB SSD、3Mbps的阿里云ECS服务器（总之高于这个配置的肯定都可以，但这个配置基本是极限了）</li>
+<li>完整的Docker、Docker Compose环境，可以参考阿里云的<a href="https://help.aliyun.com/zh/ecs/user-guide/install-and-use-docker">文档</a>安装。docker镜像这块，阿里云分配的镜像已经不更新了，有一些image pull不下来。可以多试试<a href="https://github.com/dongyubin/DockerHub">这个仓库</a>收集的源。</li>
+<li>操作系统这块理论上来说是正儿八经的就行。不过我不太熟那个啥alibaba linux，用的ubuntu 24.04，后续也都建立在ubuntu 24.04的基础上。</li>
+</ul>
+<h3 id="swap">
+<a class="header-anchor" href="#swap"></a>
+swap
+</h3><p>服务器内存太小了，实测下来，部署一个outline已经是燃尽了，随时有OOM风险。我也因为这个OOM导致卡死了好几次，导致配置过程中频繁重启服务器。因此这边我建议同样是用这个99元/年阿里云服务器的（或者差不多配置的）可以搞一下swap，用磁盘替代一下内存，至少不会卡死。</p>
+<p>查看当前swap：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">free -h
+</span></span></code></pre></div><p>输出应该类似：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">              total   used   free
+</span></span><span class="line"><span class="cl">Mem:           2.0G   800M   1.2G
+</span></span><span class="line"><span class="cl">Swap:            0B     0B     0B
+</span></span></code></pre></div><p>默认的话Swap应该是0. 我设置的是4G的swap：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo fallocate -l 4G /swapfile
+</span></span><span class="line"><span class="cl">sudo chmod <span class="m">600</span> /swapfile  <span class="c1"># 设置为只有root可读</span>
+</span></span><span class="line"><span class="cl">sudo mkswap /swapfile
+</span></span><span class="line"><span class="cl">sudo swapon /swapfile
+</span></span></code></pre></div><blockquote class="markdown-alert markdown-alert-note" role="note">
+    <p class="markdown-alert-title">
+      <span class="markdown-alert-icon" aria-hidden="true"></span>NOTE</p>
+    <p>为什么要将swapfile设置为仅root可读？
+因为 swap 文件会直接存放<strong>从内存换出的原始内存页</strong>，里面可能包含非常敏感的数据。如果普通用户可以读这个文件，就可能会有安全问题。</p>
+  </blockquote><p>然后再用<code>free -h</code>检查一下swap是否启用，应该可以看到swap为4G。</p>
+<h2 id="激动人心的配置环节">
+<a class="header-anchor" href="#%e6%bf%80%e5%8a%a8%e4%ba%ba%e5%bf%83%e7%9a%84%e9%85%8d%e7%bd%ae%e7%8e%af%e8%8a%82"></a>
+激动人心的配置环节
+</h2><p>我一开始尝试的是Outline官方的docker部署方式。发现不怎么开箱即用，特别是鉴权那块。说实话这块我知识盲区太多了，我折腾了好一会，把outline跑起来了，但是没鉴权，也就不能弄到公网上。随后查找各种outline部署博客，最后发现了<a href="https://github.com/vicalloy/outline-docker-compose">这个仓库</a>。这个仓库主打一个开箱即用。作者自己搓了一个私有化部署的鉴权服务器oidc，这个鉴权服务也开源了，<a href="https://github.com/vicalloy/oidc-server">仓库在这里</a>。不过这个仓库还是有缺点的，就是已经<strong>没人在维护</strong>了，导致Outline版本比较低。emmm，我是懒得折腾了，现在用旧版本感觉也挺好的。</p>
+        
+        <hr><p>本文2026-07-23首发于<a href='https://blog.glowled.top/'>GlowLED的后花园</a>，最后修改于2026-07-23</p>]]></description></item><item><title>二十一世纪火柴编译目录</title><link>https://blog.glowled.top/post/torch-compile-tech-overview/</link><pubDate>Mon, 20 Jul 2026 16:38:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/torch-compile-tech-overview/</guid><description>
 <![CDATA[<h1>二十一世纪火柴编译目录</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <p>本文将对torch compile技术进行总览性介绍，虽然不全也不精，但可以快速建立起一个对于torch compile的整体认知，在进行相关工程时不会变成完全黑盒。</p>
@@ -213,13 +260,13 @@ $$<ol start="3">
 <![CDATA[<h1>体渲染-随笔</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <blockquote>
-<p>本篇是随笔, 虽然写了很久, 但是乱写</p>
-</blockquote>
-<blockquote>
-<p>写了我好久, 感觉高数都还回去了.</p>
+    <p>本篇是随笔, 虽然写了很久, 但是乱写</p>
+
+  </blockquote><blockquote>
+    <p>写了我好久, 感觉高数都还回去了.</p>
 <p>寒假是真的无聊&hellip;在22: 27看高数的绝望&hellip;</p>
-</blockquote>
-<h2 id="引入">
+
+  </blockquote><h2 id="引入">
 <a class="header-anchor" href="#%e5%bc%95%e5%85%a5"></a>
 引入
 </h2><p><strong>体渲染</strong>是一种渲染模型, 也可以认为是一种渲染思路. 在Mesh的渲染中, 我们认为场景其实是<strong>面片+材质</strong>, 而体渲染认为物体应当是个<strong>有体积的东西</strong>. 光穿过物体, 在这个过程中不断与物体发生作用, 最后得到结果.</p>
@@ -234,13 +281,13 @@ $$<ol start="3">
 <![CDATA[<h1>可微渲染-随笔</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <blockquote>
-<p>本篇是随笔, 也就是随便写写一些想法, 这些想法内容不足以成文, 因此也并不考究.</p>
-</blockquote>
-<blockquote>
-<p>我之前只接触过传统CG, 不如说传统CG都没怎么学明白. 实际上基本只学了Path Tracing, 确实是简单又出效果, 但是这导致我图形学数学基础非常烂. 最近由于要研究3DGS, 一大堆术语都是听过但是不理解. 比如球谐函数, 可微渲染种种. 我觉得不写出来就学得不踏实&hellip;&hellip;</p>
+    <p>本篇是随笔, 也就是随便写写一些想法, 这些想法内容不足以成文, 因此也并不考究.</p>
+
+  </blockquote><blockquote>
+    <p>我之前只接触过传统CG, 不如说传统CG都没怎么学明白. 实际上基本只学了Path Tracing, 确实是简单又出效果, 但是这导致我图形学数学基础非常烂. 最近由于要研究3DGS, 一大堆术语都是听过但是不理解. 比如球谐函数, 可微渲染种种. 我觉得不写出来就学得不踏实&hellip;&hellip;</p>
 <p>所以会更一些图形学相关的下饭小文章, 纯粹是自己的输出, 没有太在乎可读性. 不过我是比较难接受抽象想法的人, 只有把事情想得直观一些才能理解。所以应该(?)会比较简单.</p>
-</blockquote>
-<p>试想一下我们的计算机图形学渲染过程是啥样的:
+
+  </blockquote><p>试想一下我们的计算机图形学渲染过程是啥样的:
 </p>
 $$
 场景参数 + 算法 \rightarrow 图像
@@ -254,9 +301,9 @@ $$<p>
 <![CDATA[<h1>GQA分组查询注意力学习笔记与代码实现</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <blockquote>
-<p>上一篇文章搞定了RoPE，接下来该实现llama中使用的另外一个关键技术：Group Query Attention，分组查询注意力机制。             相比RoPE，个人觉得这个好理解一些，不过代码实现上难度大一些。当然了，我还是给它实现出来了。不过有关解码的部分，GQA的kv cache与原来的MHA不太一样，目前我的项目还没做到解码的部分，等我的SimpleLLM项目实现到这一部分应该会在后面加上，或者专门写一篇文章讲讲解码的全过程实现，里面会包含这几种注意力机制（还有MQA）的解码。</p>
-</blockquote>
-<p><strong>手搓LLM架构与训练过程：</strong><a href="https://github.com/GlowLED/SimpleLLM">SimpleLLM</a></p>
+    <p>上一篇文章搞定了RoPE，接下来该实现llama中使用的另外一个关键技术：Group Query Attention，分组查询注意力机制。             相比RoPE，个人觉得这个好理解一些，不过代码实现上难度大一些。当然了，我还是给它实现出来了。不过有关解码的部分，GQA的kv cache与原来的MHA不太一样，目前我的项目还没做到解码的部分，等我的SimpleLLM项目实现到这一部分应该会在后面加上，或者专门写一篇文章讲讲解码的全过程实现，里面会包含这几种注意力机制（还有MQA）的解码。</p>
+
+  </blockquote><p><strong>手搓LLM架构与训练过程：</strong><a href="https://github.com/GlowLED/SimpleLLM">SimpleLLM</a></p>
 <p>在讲解GQA之前，我们先讲讲最开始的MHA（Multi Head Attention，多头注意力机制），与改进后的MQA（Multi Query Attention，多查询注意力机制）。</p>
 <h2 id="mha与mqa">
 <a class="header-anchor" href="#mha%e4%b8%8emqa"></a>
@@ -304,9 +351,9 @@ GQA，分组查询注意力机制
 <![CDATA[<h1>RoPE旋转位置编码学习笔记与代码实现</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
         
           <blockquote>
-<p>最近想写点torch，就打算手搓个llm预训练，于是就去拿llama3开刀。尝试去实现久闻大名的RoPE（旋转位置编码）的时候，搜到了这篇文章，然后就直接开看。奈何本人数学水平实在太差，横竖看不进去，总是不太能理解。于是就干脆对着公式写代码，经过一段痛苦的时间后，勉强挤出几十行代码，才算是对RoPE有了一些不严谨的理解。</p>
-</blockquote>
-<p><strong>最近心血来潮整的手搓llm结构与训练过程：</strong><a href="http://github.com/GlowLED/SimpleLLM">SimpleLLM</a> (应该会摆掉，应该&hellip;)</p>
+    <p>最近想写点torch，就打算手搓个llm预训练，于是就去拿llama3开刀。尝试去实现久闻大名的RoPE（旋转位置编码）的时候，搜到了这篇文章，然后就直接开看。奈何本人数学水平实在太差，横竖看不进去，总是不太能理解。于是就干脆对着公式写代码，经过一段痛苦的时间后，勉强挤出几十行代码，才算是对RoPE有了一些不严谨的理解。</p>
+
+  </blockquote><p><strong>最近心血来潮整的手搓llm结构与训练过程：</strong><a href="http://github.com/GlowLED/SimpleLLM">SimpleLLM</a> (应该会摆掉，应该&hellip;)</p>
 <h2 id="绝对位置编码的缺陷">
 <a class="header-anchor" href="#%e7%bb%9d%e5%af%b9%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81%e7%9a%84%e7%bc%ba%e9%99%b7"></a>
 绝对位置编码的缺陷

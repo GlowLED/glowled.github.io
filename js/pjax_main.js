@@ -26,6 +26,39 @@
       }
     });
   };
+  var renderInfoBoxes = () => {
+    _$$(".article-entry").forEach((article) => {
+      const children = Array.from(article.children);
+      children.forEach((opening, openingIndex) => {
+        if (opening.parentElement !== article || opening.tagName !== "P") return;
+        const singleParagraphMatch = opening.innerHTML.match(
+          /^:::info[ \t]*\n([\s\S]*?)\n:::[ \t]*$/i
+        );
+        if (singleParagraphMatch) {
+          const alert2 = document.createElement("blockquote");
+          alert2.className = "markdown-alert markdown-alert-info";
+          alert2.setAttribute("role", "note");
+          alert2.innerHTML = `<p class="markdown-alert-title"><span class="markdown-alert-icon" aria-hidden="true"></span>INFO</p><p>${singleParagraphMatch[1]}</p>`;
+          opening.replaceWith(alert2);
+          return;
+        }
+        if (!/^:::info$/i.test(opening.textContent.trim())) return;
+        const closingIndex = children.findIndex(
+          (candidate, index) => index > openingIndex && candidate.parentElement === article && candidate.tagName === "P" && candidate.textContent.trim() === ":::"
+        );
+        if (closingIndex === -1) return;
+        const alert = document.createElement("blockquote");
+        alert.className = "markdown-alert markdown-alert-info";
+        alert.setAttribute("role", "note");
+        alert.innerHTML = '<p class="markdown-alert-title"><span class="markdown-alert-icon" aria-hidden="true"></span>INFO</p>';
+        opening.before(alert);
+        children.slice(openingIndex + 1, closingIndex).forEach((element) => alert.append(element));
+        opening.remove();
+        children[closingIndex].remove();
+      });
+    });
+  };
+  renderInfoBoxes();
   _$$(
     ".article-entry h1>a, .article-entry h2>a, .article-entry h3>a, .article-entry h4>a, .article-entry h5>a, .article-entry h6>a"
   ).forEach((element) => {
