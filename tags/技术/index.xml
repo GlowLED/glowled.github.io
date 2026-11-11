@@ -255,6 +255,26 @@ $$<ol start="3">
 <li>
 <p><strong>Return</strong>: 回报. 又称<strong>cumulated future reward</strong>, 一般表示为$ U $, 定义为:
 </p>
+$$
+   U_t=R_t+R_{t+1}+R_{t+2}+R_{t+3}+\cdots
+   $$<p>
+其中$ R_t $为第$ t $时刻的奖励. $ U $即未来和当下所有奖励之和.</p>
+<p>有时候我们认为未来的奖励不如现在等值的奖励那么好, 所以我们会乘以一个discount rate $ \gamma $. $ \gamma \in (0, 1]$. $ U $被扩展为:
+</p>
+$$
+   U=R_t + \gamma R_{t+1} + \gamma^2R_{t+2}+\gamma^3R_{t+3} + \cdots
+   $$</li>
+<li>
+<p><strong>Value Function</strong>: 价值函数.</p>
+<p>价值函数使用期望对未来的收益进行预测，一方面不必等待未来的收益实际发生就可以获知当前状态的好坏，另一方面通过期望汇总了未来各种可能的收益情况。使用价值函数可以很方便地评价不同策略的好坏。</p>
+</li>
+<li>
+<p><strong>State-value Function</strong>: 状态价值函数. 用于度量给定策略下, 某个状态的回报的期望. 用于评判状态的好坏.</p>
+</li>
+<li>
+<p><strong>Action-value Function</strong>: 行动价值函数. 用于度量给定策略和状态下, 采取某个行动的回报的期望. 用于评判动作的好坏.</p>
+</li>
+</ol>
         
         <hr><p>本文2026-01-28首发于<a href='https://blog.glowled.top/'>GlowLED的后花园</a>，最后修改于2026-01-28</p>]]></description><category>强化学习</category><category>深度学习</category></item><item><title>体渲染-随笔</title><link>https://blog.glowled.top/post/volume-rendering/</link><pubDate>Tue, 27 Jan 2026 19:09:14 +0800</pubDate><author>zpeiyu11@gamil.com (GlowLED)</author><guid>https://blog.glowled.top/post/volume-rendering/</guid><description>
 <![CDATA[<h1>体渲染-随笔</h1><p>作者：GlowLED（zpeiyu11@gamil.com）</p>
